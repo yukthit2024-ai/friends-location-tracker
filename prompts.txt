@@ -1,0 +1,332 @@
+create an android application which is basically a matrix chat client combined with google map display
+The app name is "Friend Location Tracking"
+On application start It should show a google map implemented using google map SDK.
+It should show the current user's location on map using a green color
+The same app when used by a friend user, will send his gps co-ordinates using the matrix client in the app.
+on receiving the frend's coordinates via matrix client, use that coordinates and show it in thegoogle map as red color point.
+Basically the app shows gps coordinates to two or more persons.
+
+develop the app in java (not kotlin)
+Need a left side menu with items like "Settings", "Help", "About".
+for Help and Alert place a screen with some dummy data
+The left side menu is covering from top to bottom.  Even when menu is visible, it should not cover the app top bar and so on....
+store the timestamp as ISO format instead of milliseconds since epoc
+use latest gradle version supported by github actions
+include gradle properties and gradle wrapper dependencies in the project
+
+Give me as a single prompt to give to an agent to achieve this
+===================================================================================================
+The chatgpt output from above, use that to give prompt inside IDE
+
+
+
+
+
+
+OUTPUT
+
+---
+
+# ✅ **AGENT PROMPT — Friend Location Tracking App**
+
+Build a complete Android application in **Java (NOT Kotlin)** with the following specifications:
+
+---
+
+## 📱 App Overview
+
+* **App Name:** Friend Location Tracking
+* **Language:** Java only
+* **Min SDK:** 24+
+* **Target SDK:** Latest stable
+* **Build System:** Gradle (latest version supported by GitHub Actions)
+* **UI Framework:** Material Components
+* **Maps:** Google Maps SDK
+* **Messaging:** Matrix protocol client integration
+
+---
+
+## 🧭 Core Functionality
+
+### 1. Main Screen (Map Screen)
+
+* On app launch, show a **Google Map** using Google Maps SDK
+* Display:
+
+  * Current user's GPS location → **Green marker**
+  * Friends' locations → **Red markers**
+
+---
+
+## 📍 Location Handling
+
+### Current User:
+
+* Fetch GPS using:
+
+  * `FusedLocationProviderClient`
+* Update location periodically (e.g., every 5–10 seconds)
+* Send location via Matrix client
+
+### Friend Users:
+
+* Receive location messages via Matrix
+* Parse received JSON
+* Plot markers on map
+
+---
+
+## 📡 Matrix Integration
+
+Use a Java-compatible Matrix client (e.g., REST-based implementation if SDK not available).
+
+### Behavior:
+
+* On login/connect:
+
+  * Join a predefined room (or configurable)
+* Send location updates as JSON:
+
+```json
+{
+  "type": "location",
+  "userId": "user123",
+  "latitude": 12.9716,
+  "longitude": 77.5946,
+  "timestamp": "2026-04-12T10:15:30"
+}
+```
+
+### On receiving message:
+
+* Filter messages of type `"location"`
+* Extract:
+
+  * userId
+  * latitude
+  * longitude
+* Update or add marker for that user
+
+---
+
+## 🗺️ Map Behavior
+
+* Use Google Maps SDK
+* Enable:
+
+  * My Location layer (if permission granted)
+* Marker rules:
+
+  * Current user → Green marker
+  * Friends → Red markers
+* Maintain a map of:
+
+  ```
+  userId → Marker
+  ```
+* Update marker position when new data arrives
+
+---
+
+## 🧾 Timestamp Requirement
+
+* Store all timestamps in **ISO 8601 format**
+
+```
+yyyy-MM-dd'T'HH:mm:ss
+```
+
+* DO NOT use epoch milliseconds
+
+---
+
+## 📂 Navigation Drawer (Left Menu)
+
+Implement a **full-height left navigation drawer** using `DrawerLayout`.
+
+### Requirements:
+
+* Drawer should:
+
+  * Cover full height
+  * NOT overlap the top app bar (AppBar remains visible)
+* Use `NavigationView`
+
+### Menu Items:
+
+* Settings
+* Help
+* About
+
+---
+
+## 📄 Additional Screens
+
+### 1. Settings Screen
+
+* Placeholder UI (no real logic required)
+
+### 2. Help Screen
+
+* Show dummy help text
+
+### 3. About Screen
+
+* Show app name + version + dummy description
+
+---
+
+## 📁 Project Structure
+
+### Activities:
+
+* MainActivity (Map + Drawer)
+* SettingsActivity
+* HelpActivity
+* AboutActivity
+
+### Components:
+
+* MapFragment (or SupportMapFragment)
+* MatrixClient (custom implementation)
+* LocationService (handles GPS updates)
+
+### Models:
+
+* LocationMessage (userId, lat, lon, timestamp)
+
+---
+
+## 🔐 Permissions
+
+Include:
+
+```xml
+ACCESS_FINE_LOCATION
+ACCESS_COARSE_LOCATION
+INTERNET
+ACCESS_NETWORK_STATE
+```
+
+Handle runtime permissions properly.
+
+---
+
+## ⚙️ Gradle Requirements
+
+Include:
+
+* Latest Gradle Wrapper
+* `gradle.properties`
+* `gradlew`, `gradlew.bat`
+
+Ensure build works with:
+
+```bash
+./gradlew assembleDebug
+```
+
+---
+
+## 📦 Dependencies
+
+Include:
+
+* Google Maps SDK
+* Play Services Location
+* Material Components
+* Basic HTTP client (OkHttp or HttpURLConnection for Matrix REST)
+
+---
+
+## 🧪 Behavior Requirements
+
+* App should:
+
+  * Start map immediately
+  * Request location permission if needed
+  * Continuously send location updates
+  * Receive and render friend locations in real-time
+
+---
+
+## ⚠️ Constraints
+
+* Java ONLY (no Kotlin)
+* No Firebase
+* Matrix communication via REST or Java SDK
+* Clean, readable code
+* Handle edge cases:
+
+  * No GPS
+  * No network
+  * Invalid messages
+
+---
+
+## 🤖 GitHub Actions
+
+Create:
+
+```
+.github/workflows/android.yml
+```
+
+### Workflow:
+
+* Trigger: push, pull_request
+* Steps:
+
+  1. Checkout repo
+  2. Setup JDK 17
+  3. chmod +x gradlew
+  4. Build APK:
+
+     ```
+     ./gradlew assembleDebug
+     ```
+  5. Rename APK:
+
+Format:
+
+```
+Friend-Location-Tracking-yyyyMMdd.HHmmss.apk
+```
+
+6. Upload artifact
+
+---
+
+## 📦 Output Requirements
+
+Generate:
+
+* Complete Android Studio project
+* Java source files
+* XML layouts
+* Gradle configs
+* GitHub Actions workflow
+* Working Matrix communication logic
+* Google Maps integration
+
+---
+
+## ✅ Bonus (Optional but preferred)
+
+* Smooth marker animation on updates
+* Marker labels with userId
+* Reconnect logic for Matrix
+* Basic logging
+
+---
+
+## 🎯 Final Output
+
+Produce a **complete, ready-to-build GitHub repository**.
+
+---
+
+If you want next, I can:
+
+* Generate the **actual Android project code**
+* Or give you a **working Matrix REST client implementation in Java**
