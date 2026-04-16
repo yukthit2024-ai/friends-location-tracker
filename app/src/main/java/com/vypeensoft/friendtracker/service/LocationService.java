@@ -36,7 +36,7 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        matrixClient = new MatrixClient();
+        matrixClient = new MatrixClient(this);
         createNotificationChannel();
         
         locationCallback = new LocationCallback() {

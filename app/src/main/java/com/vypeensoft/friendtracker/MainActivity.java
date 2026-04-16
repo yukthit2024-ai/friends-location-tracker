@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mapFragment.getMapAsync(this);
         }
 
-        matrixClient = new MatrixClient();
+        matrixClient = new MatrixClient(this);
         
         checkPermissionsAndStartService();
         setupFriendUpdateLoop();
@@ -201,6 +201,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+        if (matrixClient != null) {
+            matrixClient.loadConfig(this);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(locationReceiver, new IntentFilter("com.vypeensoft.friendtracker.LOCATION_UPDATE"), Context.RECEIVER_EXPORTED);
         } else {
