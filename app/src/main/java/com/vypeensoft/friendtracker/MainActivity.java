@@ -33,11 +33,10 @@ import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.Style;
 import com.mapbox.maps.plugin.annotation.AnnotationConfig;
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
-import com.mapbox.maps.plugin.annotation.AnnotationPluginImplKt;
+import com.mapbox.maps.plugin.annotation.AnnotationType;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt;
 import com.google.android.material.navigation.NavigationView;
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
@@ -101,9 +100,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView = findViewById(R.id.mapView);
         mapboxMap = mapView.getMapboxMap();
         
-        // Initialize Annotation Plugin
-        AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
-        pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationApi, new AnnotationConfig());
+        // Initialize Annotation Plugin using the standard v11 Java pattern
+        AnnotationPlugin annotationApi = (AnnotationPlugin) mapView.getPlugin("mapbox-plugin-annotation");
+        if (annotationApi != null) {
+            pointAnnotationManager = (PointAnnotationManager) annotationApi.createAnnotationManager(
+                    AnnotationType.POINT_ANNOTATION, new AnnotationConfig());
+        }
 
         mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
             // Add custom icons to the style
