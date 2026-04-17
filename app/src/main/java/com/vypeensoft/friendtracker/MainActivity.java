@@ -41,7 +41,7 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
-import com.mapbox.maps.MapboxOptions;
+import com.mapbox.common.MapboxOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
