@@ -18,20 +18,15 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
-
-import org.maplibre.android.MapLibre;
-import org.maplibre.android.maps.*;
-
-import org.maplibre.android.geometry.LatLng;
-import org.maplibre.android.maps.*;
-import org.maplibre.android.plugins.annotation.*;
-
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.Style;
 import org.maplibre.android.plugins.annotation.Symbol;
 import org.maplibre.android.plugins.annotation.SymbolManager;
 import org.maplibre.android.plugins.annotation.SymbolOptions;
-
-import org.maplibre.android.camera.CameraPosition;
-import org.maplibre.android.camera.CameraUpdateFactory;
 
 
 import com.vypeensoft.friendtracker.network.MatrixClient;
@@ -47,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     private MapView mapView;
-    private MapLibreMap mapLibreMap;
+    private MapboxMap mapboxMap;
     private SymbolManager symbolManager;
 
     private Symbol myLocationSymbol;
@@ -72,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        MapLibre.getInstance(this);
+        Mapbox.getInstance(this, null);
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -91,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView.onCreate(savedInstanceState);
 
         mapView.getMapAsync(map -> {
-            this.mapLibreMap = map;
+            this.mapboxMap = map;
 
             SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
             String styleUrl = prefs.getString(SettingsActivity.KEY_STYLE_URL,
@@ -170,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             myLocationSymbol = symbolManager.create(options);
 
-            mapLibreMap.animateCamera(
+            mapboxMap.animateCamera(
                     CameraUpdateFactory.newLatLngZoom(latLng, 14.0)
             );
         } else {
