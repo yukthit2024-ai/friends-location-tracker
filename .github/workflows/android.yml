@@ -37,8 +37,8 @@ jobs:
         
 
       # ── Build ───────────────────────────────────────────────────────────────
-      - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build with Gradle
+        run: ./gradlew assembleDebug -PMAPBOX_DOWNLOADS_TOKEN=${{ secrets.MAPBOX_DOWNLOADS_TOKEN }} --stacktrace
 
       # ── Verify APK exists (helps debug path issues) ─────────────────────────
       - name: Show APK path

@@ -5,8 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,17 +22,22 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.mapbox.geojson.Point;
+import com.mapbox.maps.CameraOptions;
+import com.mapbox.maps.MapView;
+import com.mapbox.maps.MapboxMap;
+import com.mapbox.maps.Style;
+import com.mapbox.maps.plugin.annotation.AnnotationConfig;
+import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
+import com.mapbox.maps.plugin.annotation.AnnotationPluginImplKt;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
@@ -39,13 +48,16 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
-    private GoogleMap mMap;
+    private MapView mapView;
+    private MapboxMap mapboxMap;
+    private PointAnnotationManager pointAnnotationManager;
     private DrawerLayout drawer;
-    private Marker myLocationMarker;
-    private Map<String, Marker> friendMarkers = new HashMap<>();
+    
+    private PointAnnotation myLocationAnnotation;
+    private Map<String, PointAnnotation> friendAnnotations = new HashMap<>();
     
     private MatrixClient matrixClient;
     private Handler updateHandler = new Handler();
@@ -77,16 +89,42 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(this);
-        }
+        mapView = findViewById(R.id.mapView);
+        mapboxMap = mapView.getMapboxMap();
+        
+        // Initialize Annotation Plugin
+        AnnotationPlugin annotationApi = AnnotationPluginImplKt.getAnnotations(mapView);
+        pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationApi, new AnnotationConfig());
+
+        mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
+            // Add custom icons to the style
+            addStyleImage(style, "me-icon", R.drawable.me_marker);
+            addStyleImage(style, "friend-icon", R.drawable.friend_marker);
+        });
 
         matrixClient = new MatrixClient(this);
         
         checkPermissionsAndStartService();
         setupFriendUpdateLoop();
+    }
+
+    private void addStyleImage(Style style, String id, int drawableId) {
+        Drawable drawable = ContextCompat.getDrawable(this, drawableId);
+        if (drawable != null) {
+            Bitmap bitmap = bitmapFromDrawable(drawable);
+            style.addImage(id, bitmap);
+        }
+    }
+
+    private Bitmap bitmapFromDrawable(Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable) drawable).getBitmap();
+        }
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 
     private void checkPermissionsAndStartService() {
@@ -106,22 +144,22 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-        mMap.getUiSettings().setZoomControlsEnabled(true);
-    }
-
     private void updateMyLocationMarker(double lat, double lon) {
-        LatLng latLng = new LatLng(lat, lon);
-        if (myLocationMarker == null) {
-            myLocationMarker = mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title("Me")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+        Point point = Point.fromLngLat(lon, lat);
+        if (myLocationAnnotation == null) {
+            PointAnnotationOptions options = new PointAnnotationOptions()
+                    .withPoint(point)
+                    .withIconImage("me-icon");
+            myLocationAnnotation = pointAnnotationManager.create(options);
+            
+            // Initial camera set
+            mapboxMap.setCamera(new CameraOptions.Builder()
+                    .center(point)
+                    .zoom(14.0)
+                    .build());
         } else {
-            myLocationMarker.setPosition(latLng);
+            myLocationAnnotation.setPoint(point);
+            pointAnnotationManager.update(myLocationAnnotation);
         }
     }
 
@@ -130,19 +168,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             @Override
             public void run() {
                 fetchFriendLocations();
-                updateHandler.postDelayed(this, 10000); // Update every 10s
+                updateHandler.postDelayed(this, 10000);
             }
         };
         updateHandler.post(updateRunnable);
     }
 
     private void fetchFriendLocations() {
-        matrixClient.fetchMessages(new MatrixClient.MatrixListener() {
-            @Override
-            public void onNewMessagesReceived(String rawJson) {
-                runOnUiThread(() -> parseAndShowFriends(rawJson));
-            }
-        });
+        matrixClient.fetchMessages(rawJson -> runOnUiThread(() -> parseAndShowFriends(rawJson)));
     }
 
     private void parseAndShowFriends(String rawJson) {
@@ -160,7 +193,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     String userId = content.getString("userId");
                     double lat = content.getDouble("latitude");
                     double lon = content.getDouble("longitude");
-
                     updateFriendMarker(userId, lat, lon);
                 }
             }
@@ -170,17 +202,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void updateFriendMarker(String userId, double lat, double lon) {
-        // Skip updating "me" if my userId matches (self-tracking check)
-        // For simplicity, we assume friend markers are distinct
-        LatLng latLng = new LatLng(lat, lon);
-        if (friendMarkers.containsKey(userId)) {
-            friendMarkers.get(userId).setPosition(latLng);
+        Point point = Point.fromLngLat(lon, lat);
+        if (friendAnnotations.containsKey(userId)) {
+            PointAnnotation annotation = friendAnnotations.get(userId);
+            annotation.setPoint(point);
+            pointAnnotationManager.update(annotation);
         } else {
-            Marker marker = mMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .title(userId)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-            friendMarkers.put(userId, marker);
+            PointAnnotationOptions options = new PointAnnotationOptions()
+                    .withPoint(point)
+                    .withIconImage("friend-icon")
+                    .withTextField(userId); // Show label
+            PointAnnotation annotation = pointAnnotationManager.create(options);
+            friendAnnotations.put(userId, annotation);
         }
     }
 

@@ -29,13 +29,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            app:helperText="Note: Google Maps SDK usually requires this in Manifest as well.">
+            app:helperText="Enter your Mapbox Public Access Token.">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_google_maps_key"
+                android:id="@+id/edit_mapbox_token"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Google Maps API Key" />
+                android:hint="Mapbox Access Token" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Matrix Section -->

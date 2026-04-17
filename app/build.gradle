@@ -19,7 +19,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
-        // Inject Git info into BuildConfig (placeholder for now)
         buildConfigField "String", "BUILD_TIMESTAMP", "\"${new Date().format('yyyyMMdd.HHmmss')}\""
     }
 
@@ -41,8 +40,10 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     
-    // Google Maps & Location
-    implementation 'com.google.android.gms:play-services-maps:18.2.0'
+    // Mapbox Maps SDK
+    implementation 'com.mapbox.maps:android:11.2.0'
+    
+    // Location (needed for GPS updates even with Mapbox)
     implementation 'com.google.android.gms:play-services-location:21.1.0'
     
     // Networking & JSON

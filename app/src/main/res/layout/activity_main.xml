@@ -32,11 +32,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             
-            <fragment
-                android:id="@+id/map"
-                android:name="com.google.android.gms.maps.SupportMapFragment"
+            <com.mapbox.maps.MapView
+                android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                app:mapbox_resourcesAccessToken="YOUR_MAPBOX_ACCESS_TOKEN" />
         </FrameLayout>
 
     </LinearLayout>
