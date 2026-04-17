@@ -42,7 +42,7 @@ dependencies {
     
     // MapLibre SDK (Open Source fork of Mapbox)
     implementation "org.maplibre.gl:android-sdk:10.2.0"
-    implementation "org.maplibre.gl:android-plugin-annotation-v10:1.0.0"
+    implementation "org.maplibre.gl:android-plugin-annotation-v9:2.0.2"
     
     // Location services
     implementation 'com.google.android.gms:play-services-location:21.1.0'
