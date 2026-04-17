@@ -33,9 +33,9 @@ import org.maplibre.android.geometry.LatLng;
 import org.maplibre.android.maps.MapView;
 import org.maplibre.android.maps.MapLibreMap;
 import org.maplibre.android.maps.Style;
-import org.maplibre.android.plugins.annotation.Symbol;
-import org.maplibre.android.plugins.annotation.SymbolManager;
-import org.maplibre.android.plugins.annotation.SymbolOptions;
+//import org.maplibre.android.plugins.annotation.Symbol;
+//import org.maplibre.android.plugins.annotation.SymbolManager;
+//import org.maplibre.android.plugins.annotation.SymbolOptions;
 
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
@@ -46,20 +46,29 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+
+import org.maplibre.android.maps.plugin.annotation.AnnotationPlugin;
+import org.maplibre.android.maps.plugin.annotation.generated.PointAnnotationManager;
+import org.maplibre.android.maps.plugin.annotation.generated.PointAnnotationOptions;
+import org.maplibre.android.maps.plugin.annotation.generated.PointAnnotation;
+
+
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private MapView mapView;
     private MapLibreMap mapLibreMap;
-    private SymbolManager symbolManager;
     private DrawerLayout drawer;
     
-    private Symbol myLocationSymbol;
-    private Map<String, Symbol> friendSymbols = new HashMap<>();
     
     private MatrixClient matrixClient;
     private Handler updateHandler = new Handler();
     private Runnable updateRunnable;
+
+    private PointAnnotationManager pointAnnotationManager;
+    private org.maplibre.android.maps.plugin.annotation.generated.PointAnnotation myLocationAnnotation;
+    private Map<String, org.maplibre.android.maps.plugin.annotation.generated.PointAnnotation> friendAnnotations = new HashMap<>();
 
     private BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -109,9 +118,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             map.setStyle(new Style.Builder().fromUri(styleUrl), style -> {
                 // Initialize markers/annotations
-                symbolManager = new SymbolManager(mapView, map, style);
-                symbolManager.setIconAllowOverlap(true);
-                symbolManager.setTextAllowOverlap(true);
+                AnnotationPlugin annotationPlugin = mapView.getPlugin(AnnotationPlugin.class);
+
+                if (annotationPlugin != null) {
+                    pointAnnotationManager =
+                            annotationPlugin.createPointAnnotationManager(mapView);
+                }
 
                 // Add custom icons to the style
                 addStyleImage(style, "me-icon", R.drawable.me_marker);
@@ -167,20 +179,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateMyLocationMarker(double lat, double lon) {
-        if (symbolManager == null) return;
+        if (pointAnnotationManager == null) return;
 
-        LatLng latLng = new LatLng(lat, lon);
-        if (myLocationSymbol == null) {
-            SymbolOptions options = new SymbolOptions()
-                    .withLatLng(latLng)
+        org.maplibre.android.geometry.Point point =
+                org.maplibre.android.geometry.Point.fromLngLat(lon, lat);
+
+        if (myLocationAnnotation == null) {
+            PointAnnotationOptions options = new PointAnnotationOptions()
+                    .withPoint(point)
                     .withIconImage("me-icon");
-            myLocationSymbol = symbolManager.create(options);
-            
-            // Initial camera set
-            mapLibreMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0));
+
+            myLocationAnnotation = pointAnnotationManager.create(options);
+
+            mapLibreMap.animateCamera(
+                    CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), 14.0)
+            );
         } else {
-            myLocationSymbol.setLatLng(latLng);
-            symbolManager.update(myLocationSymbol);
+            myLocationAnnotation.setPoint(point);
+            pointAnnotationManager.update(myLocationAnnotation);
         }
     }
 
@@ -223,20 +239,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateFriendMarker(String userId, double lat, double lon) {
-        if (symbolManager == null) return;
+        if (pointAnnotationManager == null) return;
 
-        LatLng latLng = new LatLng(lat, lon);
-        if (friendSymbols.containsKey(userId)) {
-            Symbol symbol = friendSymbols.get(userId);
-            symbol.setLatLng(latLng);
-            symbolManager.update(symbol);
+        org.maplibre.android.geometry.Point point =
+                org.maplibre.android.geometry.Point.fromLngLat(lon, lat);
+
+        if (friendAnnotations.containsKey(userId)) {
+            PointAnnotation annotation = friendAnnotations.get(userId);
+            annotation.setPoint(point);
+            pointAnnotationManager.update(annotation);
         } else {
-            SymbolOptions options = new SymbolOptions()
-                    .withLatLng(latLng)
+            PointAnnotationOptions options = new PointAnnotationOptions()
+                    .withPoint(point)
                     .withIconImage("friend-icon")
-                    .withTextField(userId); // Show label
-            Symbol symbol = symbolManager.create(options);
-            friendSymbols.put(userId, symbol);
+                    .withTextField(userId);
+
+            PointAnnotation annotation = pointAnnotationManager.create(options);
+            friendAnnotations.put(userId, annotation);
         }
     }
 
