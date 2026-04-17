@@ -43,6 +43,9 @@ dependencies {
     // Mapbox Maps SDK
     implementation 'com.mapbox.maps:android:11.2.0'
     
+    // Explicitly adding Annotation and Location extensions for version 11 compatibility
+    implementation 'com.mapbox.extension:maps-annotation:11.2.0'
+    
     // Location (needed for GPS updates even with Mapbox)
     implementation 'com.google.android.gms:play-services-location:21.1.0'
     
