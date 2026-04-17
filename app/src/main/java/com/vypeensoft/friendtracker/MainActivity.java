@@ -41,6 +41,7 @@ import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
+import com.mapbox.maps.MapboxOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -75,6 +76,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Load Mapbox token from settings and set it globally
+        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        String mapboxToken = prefs.getString(SettingsActivity.KEY_MAPBOX_TOKEN, "");
+        if (!mapboxToken.isEmpty()) {
+            MapboxOptions.setAccessToken(mapboxToken);
+        }
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
