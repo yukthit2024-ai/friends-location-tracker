@@ -20,10 +20,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
 import org.maplibre.android.MapLibre;
-import org.maplibre.android.camera.CameraUpdateFactory;
+import org.maplibre.android.maps.*;
+
 import org.maplibre.android.geometry.LatLng;
 import org.maplibre.android.maps.*;
 import org.maplibre.android.plugins.annotation.*;
+
+import org.maplibre.android.plugins.annotation.Symbol;
+import org.maplibre.android.plugins.annotation.SymbolManager;
+import org.maplibre.android.plugins.annotation.SymbolOptions;
+
+import org.maplibre.android.camera.CameraPosition;
+import org.maplibre.android.camera.CameraUpdateFactory;
+
 
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
