@@ -31,9 +31,7 @@ import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.Style;
-import com.mapbox.maps.plugin.annotation.AnnotationConfig;
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
-import com.mapbox.maps.plugin.annotation.AnnotationType;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
@@ -101,16 +99,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapboxMap = mapView.getMapboxMap();
         
         // Initialize Annotation Plugin using the standard v11 Java pattern
-        AnnotationPlugin annotationPlugin = (AnnotationPlugin) mapView.getPlugin("mapbox-plugin-annotation");
-        if (annotationPlugin != null) {
-            pointAnnotationManager = PointAnnotationManagerKt.createPointAnnotationManager(annotationPlugin, new AnnotationConfig());
-        }
 
         mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
-            // Add custom icons to the style
+
+            // Add icons
             addStyleImage(style, "me-icon", R.drawable.me_marker);
             addStyleImage(style, "friend-icon", R.drawable.friend_marker);
+
+            // Initialize annotation manager AFTER style loads
+            AnnotationPlugin annotationPlugin = mapView.getPlugin(AnnotationPlugin.class);
+
+            if (annotationPlugin != null) {
+                pointAnnotationManager = annotationPlugin.createPointAnnotationManager(mapView);
+            }
         });
+
 
         matrixClient = new MatrixClient(this);
         
@@ -155,6 +158,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateMyLocationMarker(double lat, double lon) {
+        if (pointAnnotationManager == null) return;
+
         Point point = Point.fromLngLat(lon, lat);
         if (myLocationAnnotation == null) {
             PointAnnotationOptions options = new PointAnnotationOptions()
@@ -212,6 +217,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateFriendMarker(String userId, double lat, double lon) {
+        if (pointAnnotationManager == null) return;
+        
         Point point = Point.fromLngLat(lon, lat);
         if (friendAnnotations.containsKey(userId)) {
             PointAnnotation annotation = friendAnnotations.get(userId);
