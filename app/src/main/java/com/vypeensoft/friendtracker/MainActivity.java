@@ -1,5 +1,6 @@
 package com.vypeensoft.friendtracker;
 
+import com.mapbox.maps.plugin.annotation.AnnotationConfig;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -99,21 +100,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapboxMap = mapView.getMapboxMap();
         
         // Initialize Annotation Plugin using the standard v11 Java pattern
+mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
 
-        mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
+    addStyleImage(style, "me-icon", R.drawable.me_marker);
+    addStyleImage(style, "friend-icon", R.drawable.friend_marker);
 
-            addStyleImage(style, "me-icon", R.drawable.me_marker);
-            addStyleImage(style, "friend-icon", R.drawable.friend_marker);
+    AnnotationPlugin annotationPlugin =
+            (AnnotationPlugin) mapView.getPlugin("mapbox-plugin-annotation");
 
-            AnnotationPlugin annotationPlugin =
-                    (AnnotationPlugin) mapView.getPlugin("mapbox-plugin-annotation");
+    if (annotationPlugin != null) {
 
-            if (annotationPlugin != null) {
-                pointAnnotationManager =
-                        com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt
-                                .createPointAnnotationManager(annotationPlugin);
-            }
-        });
+        AnnotationConfig config = new AnnotationConfig();
+
+        pointAnnotationManager =
+                com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt
+                        .createPointAnnotationManager(annotationPlugin, config);
+    }
+});
 
         matrixClient = new MatrixClient(this);
         
