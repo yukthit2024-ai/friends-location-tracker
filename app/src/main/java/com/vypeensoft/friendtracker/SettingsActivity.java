@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void loadConfig() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editStyleUrl.setText(prefs.getString(KEY_STYLE_URL, "https://demotiles.maplibre.org/style.json"));
+        editStyleUrl.setText(prefs.getString(KEY_STYLE_URL, "https://tiles.openfreemap.org/styles/liberty"));
         editHomeserver.setText(prefs.getString(KEY_MATRIX_HOMESERVER, "https://matrix-client.matrix.org"));
         editToken.setText(prefs.getString(KEY_MATRIX_TOKEN, ""));
         editRoomId.setText(prefs.getString(KEY_MATRIX_ROOM_ID, ""));

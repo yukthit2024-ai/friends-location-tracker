@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
             String styleUrl = prefs.getString(SettingsActivity.KEY_STYLE_URL,
-                    "https://demotiles.maplibre.org/style.json");
+                    "https://tiles.openfreemap.org/styles/liberty");
 
             map.setStyle(new Style.Builder().fromUri(styleUrl), style -> {
 
