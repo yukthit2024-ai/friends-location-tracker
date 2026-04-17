@@ -17,11 +17,11 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:layout_marginBottom="24dp" />
 
-        <!-- Google Maps Section -->
+        <!-- MapLibre Section -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Google Maps API"
+            android:text="MapLibre Configuration"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
@@ -29,13 +29,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
-            app:helperText="Enter your Mapbox Public Access Token.">
+            app:helperText="Enter a Style JSON URL (e.g. MapTiler or OSM).">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/edit_mapbox_token"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Mapbox Access Token" />
+                android:hint="Map Style URL" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Matrix Section -->

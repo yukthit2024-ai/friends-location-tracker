@@ -1,0 +1,1 @@
+{"access_token":"mct_4qU4wP6yxmVaSV7uk4DjkVoKQKtjgZ_8WJK64","device_id":"bW3MOtekPa","user_id":"@bushi_vivo:matrix.org"}

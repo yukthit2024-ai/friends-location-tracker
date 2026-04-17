@@ -14,12 +14,12 @@ import com.google.android.material.textfield.TextInputEditText;
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String PREFS_NAME = "AppConfig";
-    public static final String KEY_MAPBOX_TOKEN = "mapbox_token";
+    public static final String KEY_STYLE_URL = "map_style_url";
     public static final String KEY_MATRIX_HOMESERVER = "matrix_homeserver";
     public static final String KEY_MATRIX_TOKEN = "matrix_token";
     public static final String KEY_MATRIX_ROOM_ID = "matrix_room_id";
 
-    private TextInputEditText editMapboxToken, editHomeserver, editToken, editRoomId;
+    private TextInputEditText editStyleUrl, editHomeserver, editToken, editRoomId;
     private Button btnSave;
 
     @Override
@@ -27,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        editMapboxToken = findViewById(R.id.edit_mapbox_token);
+        editStyleUrl = findViewById(R.id.edit_mapbox_token);
         editHomeserver = findViewById(R.id.edit_matrix_homeserver);
         editToken = findViewById(R.id.edit_matrix_token);
         editRoomId = findViewById(R.id.edit_matrix_room_id);
@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void loadConfig() {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editMapboxToken.setText(prefs.getString(KEY_MAPBOX_TOKEN, ""));
+        editStyleUrl.setText(prefs.getString(KEY_STYLE_URL, "https://demotiles.maplibre.org/style.json"));
         editHomeserver.setText(prefs.getString(KEY_MATRIX_HOMESERVER, "https://matrix-client.matrix.org"));
         editToken.setText(prefs.getString(KEY_MATRIX_TOKEN, ""));
         editRoomId.setText(prefs.getString(KEY_MATRIX_ROOM_ID, ""));
@@ -50,7 +50,7 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        editor.putString(KEY_MAPBOX_TOKEN, editMapboxToken.getText().toString().trim());
+        editor.putString(KEY_STYLE_URL, editStyleUrl.getText().toString().trim());
         editor.putString(KEY_MATRIX_HOMESERVER, editHomeserver.getText().toString().trim());
         editor.putString(KEY_MATRIX_TOKEN, editToken.getText().toString().trim());
         editor.putString(KEY_MATRIX_ROOM_ID, editRoomId.getText().toString().trim());

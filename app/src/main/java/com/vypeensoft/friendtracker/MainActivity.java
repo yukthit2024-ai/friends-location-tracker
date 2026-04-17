@@ -1,6 +1,5 @@
 package com.vypeensoft.friendtracker;
 
-import com.mapbox.maps.plugin.annotation.AnnotationConfig;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,19 +26,19 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.mapbox.geojson.Point;
-import com.mapbox.maps.CameraOptions;
-import com.mapbox.maps.MapView;
-import com.mapbox.maps.MapboxMap;
-import com.mapbox.maps.Style;
-import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions;
 import com.google.android.material.navigation.NavigationView;
+import org.maplibre.android.MapLibre;
+import org.maplibre.android.camera.CameraUpdateFactory;
+import org.maplibre.android.geometry.LatLng;
+import org.maplibre.android.maps.MapView;
+import org.maplibre.android.maps.MapLibreMap;
+import org.maplibre.android.maps.Style;
+import org.maplibre.android.plugins.annotation.Symbol;
+import org.maplibre.android.plugins.annotation.SymbolManager;
+import org.maplibre.android.plugins.annotation.SymbolOptions;
+
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
-import com.mapbox.common.MapboxOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -51,12 +50,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private MapView mapView;
-    private MapboxMap mapboxMap;
-    private PointAnnotationManager pointAnnotationManager;
+    private MapLibreMap mapLibreMap;
+    private SymbolManager symbolManager;
     private DrawerLayout drawer;
     
-    private PointAnnotation myLocationAnnotation;
-    private Map<String, PointAnnotation> friendAnnotations = new HashMap<>();
+    private Symbol myLocationSymbol;
+    private Map<String, Symbol> friendSymbols = new HashMap<>();
     
     private MatrixClient matrixClient;
     private Handler updateHandler = new Handler();
@@ -75,18 +74,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Load Mapbox token from settings and set it globally
-        SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
-        String mapboxToken = prefs.getString(SettingsActivity.KEY_MAPBOX_TOKEN, "");
-        
-        // Mapbox v11 requires a non-empty token at inflation time (setContentView)
-        // We use a placeholder if none exists so the app can boot and let the user enter one in Settings
-        if (mapboxToken.isEmpty()) {
-            MapboxOptions.setAccessToken("pk.YOUR_TOKEN_REQUIRED");
-            Toast.makeText(this, "Please set your Mapbox Access Token in Settings", Toast.LENGTH_LONG).show();
-        } else {
-            MapboxOptions.setAccessToken(mapboxToken);
-        }
+        // Initialize MapLibre
+        MapLibre.getInstance(this);
 
         setContentView(R.layout.activity_main);
 
@@ -103,26 +92,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
 
         mapView = findViewById(R.id.mapView);
-        mapboxMap = mapView.getMapboxMap();
+        mapView.onCreate(savedInstanceState);
         
-        // Initialize Annotation Plugin using the standard v11 Java pattern
-mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
+        mapView.getMapAsync(map -> {
+            this.mapLibreMap = map;
+            
+            // Default MapLibre style or user-provided one
+            SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+            String styleUrl = prefs.getString(SettingsActivity.KEY_STYLE_URL, "https://demotiles.maplibre.org/style.json");
+            
+            // MapLibre uses direct URLs. If it looks like a token, we might need to construct a URL
+            if (!styleUrl.startsWith("http") && !styleUrl.startsWith("mapbox://")) {
+                // Fallback for demo
+                styleUrl = "https://demotiles.maplibre.org/style.json";
+            }
 
-    addStyleImage(style, "me-icon", R.drawable.me_marker);
-    addStyleImage(style, "friend-icon", R.drawable.friend_marker);
+            map.setStyle(new Style.Builder().fromUri(styleUrl), style -> {
+                // Initialize markers/annotations
+                symbolManager = new SymbolManager(mapView, map, style);
+                symbolManager.setIconAllowOverlap(true);
+                symbolManager.setTextAllowOverlap(true);
 
-    AnnotationPlugin annotationPlugin =
-            (AnnotationPlugin) mapView.getPlugin("mapbox-plugin-annotation");
-
-    if (annotationPlugin != null) {
-
-        AnnotationConfig config = new AnnotationConfig();
-
-        pointAnnotationManager =
-                com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt
-                        .createPointAnnotationManager(annotationPlugin, config);
-    }
-});
+                // Add custom icons to the style
+                addStyleImage(style, "me-icon", R.drawable.me_marker);
+                addStyleImage(style, "friend-icon", R.drawable.friend_marker);
+            });
+        });
 
         matrixClient = new MatrixClient(this);
         
@@ -172,23 +167,20 @@ mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
     }
 
     private void updateMyLocationMarker(double lat, double lon) {
-        if (pointAnnotationManager == null) return;
+        if (symbolManager == null) return;
 
-        Point point = Point.fromLngLat(lon, lat);
-        if (myLocationAnnotation == null) {
-            PointAnnotationOptions options = new PointAnnotationOptions()
-                    .withPoint(point)
+        LatLng latLng = new LatLng(lat, lon);
+        if (myLocationSymbol == null) {
+            SymbolOptions options = new SymbolOptions()
+                    .withLatLng(latLng)
                     .withIconImage("me-icon");
-            myLocationAnnotation = pointAnnotationManager.create(options);
+            myLocationSymbol = symbolManager.create(options);
             
             // Initial camera set
-            mapboxMap.setCamera(new CameraOptions.Builder()
-                    .center(point)
-                    .zoom(14.0)
-                    .build());
+            mapLibreMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14.0));
         } else {
-            myLocationAnnotation.setPoint(point);
-            pointAnnotationManager.update(myLocationAnnotation);
+            myLocationSymbol.setLatLng(latLng);
+            symbolManager.update(myLocationSymbol);
         }
     }
 
@@ -231,20 +223,20 @@ mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
     }
 
     private void updateFriendMarker(String userId, double lat, double lon) {
-        if (pointAnnotationManager == null) return;
+        if (symbolManager == null) return;
 
-        Point point = Point.fromLngLat(lon, lat);
-        if (friendAnnotations.containsKey(userId)) {
-            PointAnnotation annotation = friendAnnotations.get(userId);
-            annotation.setPoint(point);
-            pointAnnotationManager.update(annotation);
+        LatLng latLng = new LatLng(lat, lon);
+        if (friendSymbols.containsKey(userId)) {
+            Symbol symbol = friendSymbols.get(userId);
+            symbol.setLatLng(latLng);
+            symbolManager.update(symbol);
         } else {
-            PointAnnotationOptions options = new PointAnnotationOptions()
-                    .withPoint(point)
+            SymbolOptions options = new SymbolOptions()
+                    .withLatLng(latLng)
                     .withIconImage("friend-icon")
                     .withTextField(userId); // Show label
-            PointAnnotation annotation = pointAnnotationManager.create(options);
-            friendAnnotations.put(userId, annotation);
+            Symbol symbol = symbolManager.create(options);
+            friendSymbols.put(userId, symbol);
         }
     }
 
@@ -263,8 +255,15 @@ mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        if (mapView != null) mapView.onStart();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
+        if (mapView != null) mapView.onResume();
         if (matrixClient != null) {
             matrixClient.loadConfig(this);
         }
@@ -278,12 +277,32 @@ mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
     @Override
     protected void onPause() {
         super.onPause();
+        if (mapView != null) mapView.onPause();
         unregisterReceiver(locationReceiver);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mapView != null) mapView.onStop();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mapView != null) mapView.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        if (mapView != null) mapView.onLowMemory();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (mapView != null) mapView.onDestroy();
         updateHandler.removeCallbacks(updateRunnable);
     }
 

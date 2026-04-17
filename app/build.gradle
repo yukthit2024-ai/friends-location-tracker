@@ -40,10 +40,11 @@ dependencies {
     implementation 'com.google.android.material:material:1.11.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     
-    // Mapbox Maps SDK v11 (includes annotations built-in)
-    implementation 'com.mapbox.maps:android:11.2.0'
+    // MapLibre SDK (Open Source fork of Mapbox)
+    implementation 'org.maplibre.gl:android-sdk:11.5.2'
+    implementation 'org.maplibre.gl:android-plugin-annotation-v9:2.0.2'
     
-    // Location (needed for GPS updates even with Mapbox)
+    // Location services
     implementation 'com.google.android.gms:play-services-location:21.1.0'
     
     // Networking & JSON
