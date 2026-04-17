@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         AnnotationPlugin annotationApi = (AnnotationPlugin) mapView.getPlugin("mapbox-plugin-annotation");
         if (annotationApi != null) {
             pointAnnotationManager = (PointAnnotationManager) annotationApi.createAnnotationManager(
-                    AnnotationType.POINT_ANNOTATION, new AnnotationConfig());
+                    AnnotationType.POINT, new AnnotationConfig());
         }
 
         mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
