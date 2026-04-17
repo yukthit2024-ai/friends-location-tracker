@@ -102,18 +102,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
 
-            // Add icons
             addStyleImage(style, "me-icon", R.drawable.me_marker);
             addStyleImage(style, "friend-icon", R.drawable.friend_marker);
 
-            // Initialize annotation manager AFTER style loads
-            AnnotationPlugin annotationPlugin = mapView.getPlugin(AnnotationPlugin.class);
+            AnnotationPlugin annotationPlugin =
+                    (AnnotationPlugin) mapView.getPlugin("mapbox-plugin-annotation");
 
             if (annotationPlugin != null) {
-                pointAnnotationManager = annotationPlugin.createPointAnnotationManager(mapView);
+                pointAnnotationManager =
+                        com.mapbox.maps.plugin.annotation.generated.PointAnnotationManagerKt
+                                .createPointAnnotationManager(annotationPlugin);
             }
         });
-
 
         matrixClient = new MatrixClient(this);
         
@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void updateFriendMarker(String userId, double lat, double lon) {
         if (pointAnnotationManager == null) return;
-        
+
         Point point = Point.fromLngLat(lon, lat);
         if (friendAnnotations.containsKey(userId)) {
             PointAnnotation annotation = friendAnnotations.get(userId);
