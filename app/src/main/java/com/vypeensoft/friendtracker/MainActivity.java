@@ -78,7 +78,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Load Mapbox token from settings and set it globally
         SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
         String mapboxToken = prefs.getString(SettingsActivity.KEY_MAPBOX_TOKEN, "");
-        if (!mapboxToken.isEmpty()) {
+        
+        // Mapbox v11 requires a non-empty token at inflation time (setContentView)
+        // We use a placeholder if none exists so the app can boot and let the user enter one in Settings
+        if (mapboxToken.isEmpty()) {
+            MapboxOptions.setAccessToken("pk.YOUR_TOKEN_REQUIRED");
+            Toast.makeText(this, "Please set your Mapbox Access Token in Settings", Toast.LENGTH_LONG).show();
+        } else {
             MapboxOptions.setAccessToken(mapboxToken);
         }
 
@@ -136,7 +142,12 @@ mapboxMap.loadStyle(Style.MAPBOX_STREETS, style -> {
         if (drawable instanceof BitmapDrawable) {
             return ((BitmapDrawable) drawable).getBitmap();
         }
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        
+        // Ensure we have valid dimensions to avoid crashes (especially with vector/shape drawables)
+        int width = drawable.getIntrinsicWidth() > 0 ? drawable.getIntrinsicWidth() : 64;
+        int height = drawable.getIntrinsicHeight() > 0 ? drawable.getIntrinsicHeight() : 64;
+        
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
