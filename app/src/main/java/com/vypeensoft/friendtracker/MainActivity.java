@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override protected void onPause() { super.onPause(); mapView.onPause(); unregisterReceiver(locationReceiver); }
     @Override protected void onStop() { super.onStop(); mapView.onStop(); }
     @Override protected void onDestroy() { super.onDestroy(); mapView.onDestroy(); updateHandler.removeCallbacks(updateRunnable); }
-    @Override protected void onLowMemory() { super.onLowMemory(); mapView.onLowMemory(); }
+    @Override public    void onLowMemory() { super.onLowMemory(); mapView.onLowMemory(); }
     @Override protected void onSaveInstanceState(Bundle outState) { super.onSaveInstanceState(outState); mapView.onSaveInstanceState(outState); }
 
     @Override
