@@ -41,8 +41,8 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     
     // MapLibre SDK (Open Source fork of Mapbox)
-	implementation "org.maplibre.gl:android-sdk:9.6.0"
-	implementation "org.maplibre.gl:android-plugin-annotation-v9:1.0.0"	
+    implementation "org.maplibre.gl:android-sdk:10.2.0"
+    implementation "org.maplibre.gl:android-plugin-annotation-v10:1.0.0"
     
     // Location services
     implementation 'com.google.android.gms:play-services-location:21.1.0'
