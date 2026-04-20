@@ -82,7 +82,7 @@ public class LocationService extends Service {
     }
 
     private void onLocationUpdated(Location location) {
-        AppLogger.log(this, TAG, "Location update received: " + location.getLatitude() + ", " + location.getLongitude());
+        AppLogger.log(this, TAG, "GPS Polled - Coordinates: " + location.getLatitude() + ", " + location.getLongitude());
         
         String currentUserId = userId;
         String displayName = matrixClient.getDisplayName();

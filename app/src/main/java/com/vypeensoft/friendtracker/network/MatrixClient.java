@@ -96,7 +96,7 @@ public class MatrixClient {
             login((token) -> {
                 this.accessToken = token;
                 saveToPrefs(MapSettingsActivity.KEY_MATRIX_TOKEN, token);
-                AppLogger.log(context, TAG, "Login successful for user: " + username);
+                AppLogger.log(context, TAG, "Matrix Login Status: SUCCESS for user: " + username);
                 isConnecting = false;
                 onReady.run();
             });
@@ -123,7 +123,7 @@ public class MatrixClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                AppLogger.logError(context, TAG, "Login failed with exception", e);
+                AppLogger.logError(context, TAG, "Matrix Login Status: FAILED with exception", e);
                 isConnecting = false;
             }
 
@@ -133,7 +133,7 @@ public class MatrixClient {
                     java.util.Map<String, Object> resp = gson.fromJson(response.body().string(), java.util.Map.class);
                     callback.accept((String) resp.get("access_token"));
                 } else {
-                    AppLogger.log(context, TAG, "Login failed with code: " + response.code());
+                    AppLogger.log(context, TAG, "Matrix Login Status: FAILED (Code: " + response.code() + ")");
                     isConnecting = false;
                 }
                 response.close();
@@ -164,15 +164,15 @@ public class MatrixClient {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    AppLogger.logError(context, TAG, "Failed to send location message", e);
+                    AppLogger.logError(context, TAG, "Matrix Message Send Status: FAILED with exception for room: " + roomId, e);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        AppLogger.log(context, TAG, "Server error on send: " + response.code() + " for room: " + roomId);
+                        AppLogger.log(context, TAG, "Matrix Message Send Status: FAILED (Code: " + response.code() + ") for room: " + roomId);
                     } else {
-                        AppLogger.log(context, TAG, "Message successfully delivered to room: " + roomId);
+                        AppLogger.log(context, TAG, "Matrix Message Send Status: SUCCESS for room: " + roomId);
                     }
                     response.close();
                 }
