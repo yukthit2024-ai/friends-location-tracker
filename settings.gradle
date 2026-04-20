@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Friend Location Tracking"
+rootProject.name = "Friends Location Tracking"
 include ':app'
