@@ -17,7 +17,7 @@ public class AboutActivity extends AppCompatActivity {
                 "Commit: " + BuildConfig.GIT_SHA + "\n" +
                 "Full SHA: " + BuildConfig.GIT_SHA_FULL + "\n" +
 //                "Tag: " + BuildConfig.GIT_TAG + "\n\n" +
-                getString(R.string.about_description);
+                getString(R.string.about_text);
 
         TextView tvBuildInfo = findViewById(R.id.tvBuildInfo);
         tvBuildInfo.setText(buildInfo);
@@ -26,7 +26,7 @@ public class AboutActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(R.string.title_about);
+            getSupportActionBar().setTitle(R.string.title_activity_about);
         }
     }
 
