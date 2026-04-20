@@ -153,7 +153,8 @@ public class MatrixClient {
 
     public void sendLocation(LocationMessage message) {
         ensureReady(() -> {
-            String url = homeserverUrl + "/_matrix/client/r0/rooms/" + roomId + "/send/m.room.message";
+            String txnId = "m" + System.currentTimeMillis();
+            String url = homeserverUrl + "/_matrix/client/v3/rooms/" + roomId + "/send/m.room.message/" + txnId;
             String json = gson.toJson(message);
             
             AppLogger.log(context, TAG, "Sending Matrix message to Room: " + roomId);
@@ -162,7 +163,7 @@ public class MatrixClient {
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder()
                     .url(url)
-                    .post(body)
+                    .put(body)
                     .addHeader("Authorization", "Bearer " + accessToken)
                     .build();
 
