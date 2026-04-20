@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private MatrixClient matrixClient;
     private Handler updateHandler = new Handler();
     private Runnable updateRunnable;
+    private long pollingPeriodMs = 10000L;
 
     private BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -197,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setupFriendUpdateLoop() {
         updateRunnable = () -> {
             fetchFriendLocations();
-            updateHandler.postDelayed(updateRunnable, 10000);
+            updateHandler.postDelayed(updateRunnable, pollingPeriodMs);
         };
         updateHandler.post(updateRunnable);
     }
@@ -256,6 +257,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         mapView.onResume();
         matrixClient.loadConfig(this);
+        
+        SharedPreferences prefs = getSharedPreferences(MapSettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        pollingPeriodMs = prefs.getLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, 10000L);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(locationReceiver,
