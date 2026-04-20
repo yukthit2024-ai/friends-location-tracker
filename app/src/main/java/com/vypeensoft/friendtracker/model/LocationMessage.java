@@ -33,9 +33,7 @@ public class LocationMessage {
         this.latitude = latitude;
         this.longitude = longitude;
         this.timestamp = getCurrentTimestampISO8601();
-        this.body = String.format(Locale.US,
-                "{\"type\":\"location\",\"userId\":\"%s\",\"latitude\":%.6f,\"longitude\":%.6f,\"timestamp\":\"%s\"}",
-                userId, latitude, longitude, timestamp);
+        this.body = String.format(Locale.US, "Location Update: %.6f, %.6f", latitude, longitude);
     }
 
     public String getType() { return type; }
