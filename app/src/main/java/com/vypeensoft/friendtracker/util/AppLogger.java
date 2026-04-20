@@ -13,7 +13,15 @@ import java.util.Locale;
 public class AppLogger {
     private static final String TAG = "AppLogger";
     private static final String LOG_DIR_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Friends_Location_Tracker/logs";
-    private static final String LOG_FILE_NAME = "app.log";
+    private static String currentLogFileName = null;
+
+    private static String getLogFileName() {
+        if (currentLogFileName == null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd-HHmmss", Locale.getDefault());
+            currentLogFileName = "app-" + sdf.format(new Date()) + ".log";
+        }
+        return currentLogFileName;
+    }
 
     public static void log(Context context, String tag, String message) {
         logToFile(context, tag, "INFO", message, null);
@@ -41,7 +49,7 @@ public class AppLogger {
                 return;
             }
 
-            File logFile = new File(dir, LOG_FILE_NAME);
+            File logFile = new File(dir, getLogFileName());
             FileWriter writer = new FileWriter(logFile, true);
             
             String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
