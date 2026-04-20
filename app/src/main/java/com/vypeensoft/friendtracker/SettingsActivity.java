@@ -18,8 +18,11 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String KEY_MATRIX_HOMESERVER = "matrix_homeserver";
     public static final String KEY_MATRIX_TOKEN = "matrix_token";
     public static final String KEY_MATRIX_ROOM_ID = "matrix_room_id";
+    public static final String KEY_MATRIX_USERNAME = "matrix_username";
+    public static final String KEY_MATRIX_PASSWORD = "matrix_password";
+    public static final String KEY_MATRIX_ROOM_ALIAS = "matrix_room_alias";
 
-    private TextInputEditText editStyleUrl, editHomeserver, editToken, editRoomId;
+    private TextInputEditText editStyleUrl, editHomeserver, editUsername, editPassword, editRoomAlias;
     private Button btnSave;
 
     @Override
@@ -29,8 +32,9 @@ public class SettingsActivity extends AppCompatActivity {
 
         editStyleUrl = findViewById(R.id.edit_mapbox_token);
         editHomeserver = findViewById(R.id.edit_matrix_homeserver);
-        editToken = findViewById(R.id.edit_matrix_token);
-        editRoomId = findViewById(R.id.edit_matrix_room_id);
+        editUsername = findViewById(R.id.edit_matrix_username);
+        editPassword = findViewById(R.id.edit_matrix_password);
+        editRoomAlias = findViewById(R.id.edit_matrix_room_alias);
         btnSave = findViewById(R.id.btn_save);
 
         loadConfig();
@@ -42,8 +46,9 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editStyleUrl.setText(prefs.getString(KEY_STYLE_URL, "https://tiles.openfreemap.org/styles/liberty"));
         editHomeserver.setText(prefs.getString(KEY_MATRIX_HOMESERVER, "https://matrix-client.matrix.org"));
-        editToken.setText(prefs.getString(KEY_MATRIX_TOKEN, ""));
-        editRoomId.setText(prefs.getString(KEY_MATRIX_ROOM_ID, ""));
+        editUsername.setText(prefs.getString(KEY_MATRIX_USERNAME, ""));
+        editPassword.setText(prefs.getString(KEY_MATRIX_PASSWORD, ""));
+        editRoomAlias.setText(prefs.getString(KEY_MATRIX_ROOM_ALIAS, ""));
     }
 
     private void saveConfig() {
@@ -52,8 +57,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         editor.putString(KEY_STYLE_URL, editStyleUrl.getText().toString().trim());
         editor.putString(KEY_MATRIX_HOMESERVER, editHomeserver.getText().toString().trim());
-        editor.putString(KEY_MATRIX_TOKEN, editToken.getText().toString().trim());
-        editor.putString(KEY_MATRIX_ROOM_ID, editRoomId.getText().toString().trim());
+        editor.putString(KEY_MATRIX_USERNAME, editUsername.getText().toString().trim());
+        editor.putString(KEY_MATRIX_PASSWORD, editPassword.getText().toString().trim());
+        editor.putString(KEY_MATRIX_ROOM_ALIAS, editRoomAlias.getText().toString().trim());
+
+        // Clear cached token and room ID when config changes to trigger re-login/re-resolution
+        editor.remove(KEY_MATRIX_TOKEN);
+        editor.remove(KEY_MATRIX_ROOM_ID);
 
         if (editor.commit()) {
             Toast.makeText(this, "Configuration Saved", Toast.LENGTH_SHORT).show();

@@ -64,10 +64,23 @@
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_matrix_token"
+                android:id="@+id/edit_matrix_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Access Token" />
+                android:hint="Username (@user:matrix.org)" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edit_matrix_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="Password" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -76,10 +89,10 @@
             android:layout_marginBottom="24dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edit_matrix_room_id"
+                android:id="@+id/edit_matrix_room_alias"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Room ID (e.g., !abcd:matrix.org)" />
+                android:hint="Room Alias (e.g., #room:matrix.org)" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
