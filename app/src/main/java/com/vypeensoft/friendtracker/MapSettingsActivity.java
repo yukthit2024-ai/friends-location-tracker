@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.vypeensoft.friendtracker.util.SettingsPersistenceManager;
 
 public class MapSettingsActivity extends AppCompatActivity {
 
@@ -61,6 +62,7 @@ public class MapSettingsActivity extends AppCompatActivity {
         editor.putString(KEY_STYLE_URL, editStyleUrl.getText().toString().trim());
 
         if (editor.commit()) {
+            SettingsPersistenceManager.exportSettings(this);
             Toast.makeText(this, "Configuration Saved", Toast.LENGTH_SHORT).show();
             finish();
         } else {

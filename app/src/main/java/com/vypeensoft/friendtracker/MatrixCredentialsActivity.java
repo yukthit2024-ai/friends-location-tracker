@@ -12,7 +12,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
-
+import com.vypeensoft.friendtracker.util.SettingsPersistenceManager;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -93,6 +93,7 @@ public class MatrixCredentialsActivity extends AppCompatActivity {
         editor.remove(MapSettingsActivity.KEY_MATRIX_TOKEN);
 
         if (editor.commit()) {
+            SettingsPersistenceManager.exportSettings(this);
             Toast.makeText(this, "Credentials Saved", Toast.LENGTH_SHORT).show();
             finish();
         } else {

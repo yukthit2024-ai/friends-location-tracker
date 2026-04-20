@@ -19,6 +19,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.vypeensoft.friendtracker.adapter.GroupRoomAdapter;
 import com.vypeensoft.friendtracker.model.GroupRoom;
+import com.vypeensoft.friendtracker.util.SettingsPersistenceManager;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -72,6 +73,7 @@ public class GroupsRoomsActivity extends AppCompatActivity implements GroupRoomA
         SharedPreferences prefs = getSharedPreferences(MapSettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
         String json = gson.toJson(roomList);
         prefs.edit().putString(KEY_MATRIX_ROOMS, json).apply();
+        SettingsPersistenceManager.exportSettings(this);
     }
 
     private void showAddRoomDialog() {

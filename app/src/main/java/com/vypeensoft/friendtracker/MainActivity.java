@@ -33,6 +33,7 @@ import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.service.LocationService;
 
 import org.json.*;
+import com.vypeensoft.friendtracker.util.SettingsPersistenceManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -256,6 +257,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override protected void onResume() {
         super.onResume();
         mapView.onResume();
+        
+        if (SettingsPersistenceManager.hasStoragePermission(this)) {
+            SettingsPersistenceManager.importSettings(this);
+        } else {
+            SettingsPersistenceManager.requestStoragePermission(this);
+        }
+
         matrixClient.loadConfig(this);
         
         SharedPreferences prefs = getSharedPreferences(MapSettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
