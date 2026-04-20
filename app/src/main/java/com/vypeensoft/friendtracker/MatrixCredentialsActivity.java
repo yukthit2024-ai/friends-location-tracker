@@ -10,7 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.material.textfield.AutoCompleteTextView;
+import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.HashMap;
@@ -19,7 +19,7 @@ import java.util.Map;
 public class MatrixCredentialsActivity extends AppCompatActivity {
 
     private TextInputEditText editHomeserver, editUsername, editPassword, editDisplayName;
-    private AutoCompleteTextView editPollingPeriod;
+    private MaterialAutoCompleteTextView editPollingPeriod;
     private Button btnSave;
 
     private static final String[] POLLING_OPTIONS = {"5 Seconds", "10 Seconds", "30 Seconds", "1 Minute", "2 Minutes", "5 Minutes"};
