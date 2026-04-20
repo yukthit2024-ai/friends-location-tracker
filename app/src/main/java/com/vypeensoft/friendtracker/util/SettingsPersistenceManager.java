@@ -63,9 +63,9 @@ public class SettingsPersistenceManager {
             JSONObject roomsJson = new JSONObject();
             roomsJson.put("matrix_rooms", prefs.getString("matrix_rooms", "[]"));
             saveToFile(new File(dir, FILE_ROOMS_SETTINGS), roomsJson.toString(4));
-
+            AppLogger.log(context, "SettingsPersistence", "Settings exported successfully to " + SETTINGS_DIR_PATH);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.logError(context, "SettingsPersistence", "Error exporting settings", e);
             Toast.makeText(context, "Error exporting settings: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
@@ -120,8 +120,9 @@ public class SettingsPersistenceManager {
             }
 
             editor.apply();
+            AppLogger.log(context, "SettingsPersistence", "Settings imported successfully from " + SETTINGS_DIR_PATH);
         } catch (Exception e) {
-            e.printStackTrace();
+            AppLogger.logError(context, "SettingsPersistence", "Error importing settings", e);
         }
     }
 

@@ -22,6 +22,7 @@ import com.google.android.gms.location.Priority;
 import com.vypeensoft.friendtracker.model.LocationMessage;
 import com.vypeensoft.friendtracker.network.MatrixClient;
 import com.vypeensoft.friendtracker.MapSettingsActivity;
+import com.vypeensoft.friendtracker.util.AppLogger;
 import android.content.SharedPreferences;
 import android.content.Context;
 
@@ -38,6 +39,7 @@ public class LocationService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        AppLogger.log(this, TAG, "LocationService created");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         matrixClient = new MatrixClient(this);
         createNotificationChannel();
@@ -56,6 +58,7 @@ public class LocationService extends Service {
     @SuppressLint("MissingPermission")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        AppLogger.log(this, TAG, "LocationService starting...");
         startForeground(NOTIFICATION_ID, getNotification());
         requestLocationUpdates();
         return START_STICKY;
@@ -79,7 +82,7 @@ public class LocationService extends Service {
     }
 
     private void onLocationUpdated(Location location) {
-        Log.d(TAG, "Location: " + location.getLatitude() + ", " + location.getLongitude());
+        AppLogger.log(this, TAG, "Location update received: " + location.getLatitude() + ", " + location.getLongitude());
         
         String currentUserId = userId;
         String displayName = matrixClient.getDisplayName();
@@ -122,6 +125,7 @@ public class LocationService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        AppLogger.log(this, TAG, "LocationService destroyed");
         fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 

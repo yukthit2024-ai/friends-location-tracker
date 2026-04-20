@@ -7,6 +7,7 @@ import com.vypeensoft.friendtracker.MapSettingsActivity;
 import com.vypeensoft.friendtracker.GroupsRoomsActivity;
 import com.vypeensoft.friendtracker.model.GroupRoom;
 import com.vypeensoft.friendtracker.model.LocationMessage;
+import com.vypeensoft.friendtracker.util.AppLogger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
@@ -94,6 +95,7 @@ public class MatrixClient {
             login((token) -> {
                 this.accessToken = token;
                 saveToPrefs(MapSettingsActivity.KEY_MATRIX_TOKEN, token);
+                AppLogger.log(context, TAG, "Login successful for user: " + username);
                 isConnecting = false;
                 onReady.run();
             });
@@ -120,7 +122,7 @@ public class MatrixClient {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "Login failed: " + e.getMessage());
+                AppLogger.logError(context, TAG, "Login failed with exception", e);
                 isConnecting = false;
             }
 
@@ -130,7 +132,7 @@ public class MatrixClient {
                     java.util.Map<String, Object> resp = gson.fromJson(response.body().string(), java.util.Map.class);
                     callback.accept((String) resp.get("access_token"));
                 } else {
-                    Log.e(TAG, "Login response failed: " + response.code());
+                    AppLogger.log(context, TAG, "Login failed with code: " + response.code());
                     isConnecting = false;
                 }
                 response.close();
@@ -158,15 +160,15 @@ public class MatrixClient {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    Log.e(TAG, "Failed to send location: " + e.getMessage());
+                    AppLogger.logError(context, TAG, "Failed to send location message", e);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        Log.e(TAG, "Server error on send: " + response.code());
+                        AppLogger.log(context, TAG, "Server error on send: " + response.code());
                     } else {
-                        Log.d(TAG, "Location sent successfully");
+                        AppLogger.log(context, TAG, "Message sent successfully to room: " + roomId);
                     }
                     response.close();
                 }
