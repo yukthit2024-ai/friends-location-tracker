@@ -20,7 +20,7 @@ more prompts
 Replace "Settings" screen with "Map Settings"
 Move matrix credentials to a new side menu item "Matrix Credentails".  Remove room alias from it.  It should contain only Home-Server, userid, password
 Add new side menu "Groups/Rooms" - This should contain a list of Group_Name/Room_Id pairs.  This is a editable list
-
+have back arrow/buttons on each Settings page
 
 
 
