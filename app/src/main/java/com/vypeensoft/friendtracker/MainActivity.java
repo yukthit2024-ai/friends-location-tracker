@@ -88,8 +88,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView.getMapAsync(map -> {
             this.mapLibreMap = map;
 
-            SharedPreferences prefs = getSharedPreferences(SettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
-            String styleUrl = prefs.getString(SettingsActivity.KEY_STYLE_URL,
+            SharedPreferences prefs = getSharedPreferences(MapSettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+            String styleUrl = prefs.getString(MapSettingsActivity.KEY_STYLE_URL,
                     "https://tiles.openfreemap.org/styles/liberty");
 
             map.setStyle(new Style.Builder().fromUri(styleUrl), style -> {
@@ -235,8 +235,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+        if (id == R.id.nav_map_settings) {
+            startActivity(new Intent(this, MapSettingsActivity.class));
+        } else if (id == R.id.nav_matrix_credentials) {
+            startActivity(new Intent(this, MatrixCredentialsActivity.class));
+        } else if (id == R.id.nav_groups_rooms) {
+            startActivity(new Intent(this, GroupsRoomsActivity.class));
         } else if (id == R.id.nav_help) {
             startActivity(new Intent(this, HelpActivity.class));
         } else if (id == R.id.nav_about) {
