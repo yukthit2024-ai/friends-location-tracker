@@ -67,7 +67,8 @@ public class MatrixClient {
             }
         }
         
-        Log.d(TAG, "Config loaded: " + homeserverUrl + " active room: " + roomId);
+        AppLogger.log(context, TAG, String.format("Config loaded: Homeserver=%s, ActiveRoom=%s, User=%s", 
+                homeserverUrl, roomId, username));
     }
 
     public boolean isConfigured() {
@@ -107,7 +108,7 @@ public class MatrixClient {
     }
 
     private void login(final java.util.function.Consumer<String> callback) {
-        Log.d(TAG, "Attempting lazy login for user: " + username);
+        AppLogger.log(context, TAG, "Attempting login to " + homeserverUrl + " for user: " + username);
         String url = homeserverUrl + "/_matrix/client/r0/login";
         
         java.util.Map<String, Object> bodyMap = new java.util.HashMap<>();
@@ -150,6 +151,9 @@ public class MatrixClient {
             String url = homeserverUrl + "/_matrix/client/r0/rooms/" + roomId + "/send/m.room.message";
             String json = gson.toJson(message);
             
+            AppLogger.log(context, TAG, "Sending Matrix message to Room: " + roomId);
+            AppLogger.log(context, TAG, "Message Content: " + json);
+
             RequestBody body = RequestBody.create(json, JSON);
             Request request = new Request.Builder()
                     .url(url)
@@ -166,9 +170,9 @@ public class MatrixClient {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (!response.isSuccessful()) {
-                        AppLogger.log(context, TAG, "Server error on send: " + response.code());
+                        AppLogger.log(context, TAG, "Server error on send: " + response.code() + " for room: " + roomId);
                     } else {
-                        AppLogger.log(context, TAG, "Message sent successfully to room: " + roomId);
+                        AppLogger.log(context, TAG, "Message successfully delivered to room: " + roomId);
                     }
                     response.close();
                 }
