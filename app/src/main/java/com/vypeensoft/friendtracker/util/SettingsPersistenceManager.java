@@ -47,7 +47,6 @@ public class SettingsPersistenceManager {
             // Category 1: Map Settings
             JSONObject mapJson = new JSONObject();
             mapJson.put(MapSettingsActivity.KEY_STYLE_URL, prefs.getString(MapSettingsActivity.KEY_STYLE_URL, ""));
-            mapJson.put(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, prefs.getLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, 10000L));
             saveToFile(new File(dir, FILE_MAP_SETTINGS), mapJson.toString(4));
 
             // Category 2: Matrix Credentials
@@ -57,6 +56,7 @@ public class SettingsPersistenceManager {
             matrixJson.put(MapSettingsActivity.KEY_MATRIX_USERNAME, prefs.getString(MapSettingsActivity.KEY_MATRIX_USERNAME, ""));
             matrixJson.put(MapSettingsActivity.KEY_MATRIX_PASSWORD, prefs.getString(MapSettingsActivity.KEY_MATRIX_PASSWORD, ""));
             matrixJson.put(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME, prefs.getString(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME, ""));
+            matrixJson.put(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, prefs.getLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, 10000L));
             saveToFile(new File(dir, FILE_MATRIX_CREDENTIALS), matrixJson.toString(4));
 
             // Category 3: Rooms Settings
@@ -89,8 +89,6 @@ public class SettingsPersistenceManager {
                 JSONObject json = new JSONObject(content);
                 if (json.has(MapSettingsActivity.KEY_STYLE_URL))
                     editor.putString(MapSettingsActivity.KEY_STYLE_URL, json.getString(MapSettingsActivity.KEY_STYLE_URL));
-                if (json.has(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD))
-                    editor.putLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, json.getLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD));
             }
 
             // Import Matrix Credentials
@@ -108,6 +106,8 @@ public class SettingsPersistenceManager {
                     editor.putString(MapSettingsActivity.KEY_MATRIX_PASSWORD, json.getString(MapSettingsActivity.KEY_MATRIX_PASSWORD));
                 if (json.has(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME))
                     editor.putString(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME, json.getString(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME));
+                if (json.has(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD))
+                    editor.putLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, json.getLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD));
             }
 
             // Import Rooms Settings
