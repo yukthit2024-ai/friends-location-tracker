@@ -21,6 +21,9 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.vypeensoft.friendtracker.model.LocationMessage;
 import com.vypeensoft.friendtracker.network.MatrixClient;
+import com.vypeensoft.friendtracker.MapSettingsActivity;
+import android.content.SharedPreferences;
+import android.content.Context;
 
 public class LocationService extends Service {
     private static final String TAG = "LocationService";
@@ -59,8 +62,13 @@ public class LocationService extends Service {
     }
 
     private void requestLocationUpdates() {
-        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
-                .setMinUpdateIntervalMillis(5000)
+        SharedPreferences prefs = getSharedPreferences(MapSettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
+        long pollingPeriodMs = prefs.getLong(MapSettingsActivity.KEY_MATRIX_POLLING_PERIOD, 10000L);
+        
+        Log.d(TAG, "Requesting location updates with period: " + pollingPeriodMs + "ms");
+
+        LocationRequest locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, pollingPeriodMs)
+                .setMinUpdateIntervalMillis(pollingPeriodMs / 2)
                 .build();
 
         try {

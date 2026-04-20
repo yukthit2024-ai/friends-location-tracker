@@ -9,6 +9,12 @@ import java.util.TimeZone;
 public class LocationMessage {
     @SerializedName("type")
     private String type = "location";
+
+    @SerializedName("msgtype")
+    private String msgtype = "m.text";
+
+    @SerializedName("body")
+    private String body;
     
     @SerializedName("userId")
     private String userId;
@@ -27,6 +33,9 @@ public class LocationMessage {
         this.latitude = latitude;
         this.longitude = longitude;
         this.timestamp = getCurrentTimestampISO8601();
+        this.body = String.format(Locale.US,
+                "{\"type\":\"location\",\"userId\":\"%s\",\"latitude\":%.6f,\"longitude\":%.6f,\"timestamp\":\"%s\"}",
+                userId, latitude, longitude, timestamp);
     }
 
     public String getType() { return type; }
