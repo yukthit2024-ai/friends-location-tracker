@@ -38,6 +38,10 @@ public class GroupsRoomsActivity extends AppCompatActivity implements GroupRoomA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_groups_rooms);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         gson = new Gson();
         loadRooms();
 

@@ -30,6 +30,10 @@ public class MapSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         editStyleUrl = findViewById(R.id.edit_mapbox_token);
         btnSave = findViewById(R.id.btn_save);
 

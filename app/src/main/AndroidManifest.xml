@@ -31,11 +31,11 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".MapSettingsActivity" android:label="@string/menu_map_settings" />
-        <activity android:name=".MatrixCredentialsActivity" android:label="@string/menu_matrix_credentials" />
-        <activity android:name=".GroupsRoomsActivity" android:label="@string/menu_groups_rooms" />
-        <activity android:name=".HelpActivity" android:label="@string/menu_help" />
-        <activity android:name=".AboutActivity" android:label="@string/menu_about" />
+        <activity android:name=".MapSettingsActivity" android:label="@string/menu_map_settings" android:parentActivityName=".MainActivity" />
+        <activity android:name=".MatrixCredentialsActivity" android:label="@string/menu_matrix_credentials" android:parentActivityName=".MainActivity" />
+        <activity android:name=".GroupsRoomsActivity" android:label="@string/menu_groups_rooms" android:parentActivityName=".MainActivity" />
+        <activity android:name=".HelpActivity" android:label="@string/menu_help" android:parentActivityName=".MainActivity" />
+        <activity android:name=".AboutActivity" android:label="@string/menu_about" android:parentActivityName=".MainActivity" />
 
         <service
             android:name=".service.LocationService"

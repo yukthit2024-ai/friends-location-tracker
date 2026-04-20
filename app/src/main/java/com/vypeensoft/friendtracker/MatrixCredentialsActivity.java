@@ -20,6 +20,10 @@ public class MatrixCredentialsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_matrix_credentials);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         editHomeserver = findViewById(R.id.edit_matrix_homeserver);
         editUsername = findViewById(R.id.edit_matrix_username);
         editPassword = findViewById(R.id.edit_matrix_password);
