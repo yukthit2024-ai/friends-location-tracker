@@ -57,7 +57,7 @@ public class GroupsRoomsActivity extends AppCompatActivity implements GroupRoomA
         recyclerView.setAdapter(adapter);
 
         btnAdd = findViewById(R.id.btn_add_room);
-        btnAdd.setOnClickListener(v -> showAddRoomDialog());
+        btnAdd.setOnClickListener(v -> showRoomDialog(null, null));
     }
 
     private void loadRooms() {
@@ -78,20 +78,31 @@ public class GroupsRoomsActivity extends AppCompatActivity implements GroupRoomA
         SettingsPersistenceManager.exportSettings(this);
     }
 
-    private void showAddRoomDialog() {
+    private void showRoomDialog(GroupRoom roomToEdit, Integer position) {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_room, null);
         EditText editName = view.findViewById(R.id.edit_room_name);
         EditText editId = view.findViewById(R.id.edit_room_id);
 
+        boolean isEdit = roomToEdit != null;
+        if (isEdit) {
+            editName.setText(roomToEdit.getName());
+            editId.setText(roomToEdit.getRoomId());
+        }
+
         new AlertDialog.Builder(this)
-                .setTitle("Add New Group/Room")
+                .setTitle(isEdit ? "Edit Group/Room" : "Add New Group/Room")
                 .setView(view)
-                .setPositiveButton("Add", (dialog, which) -> {
+                .setPositiveButton(isEdit ? "Update" : "Add", (dialog, which) -> {
                     String name = editName.getText().toString().trim();
                     String id = editId.getText().toString().trim();
                     if (!name.isEmpty() && !id.isEmpty()) {
-                        boolean isFirst = roomList.isEmpty();
-                        roomList.add(new GroupRoom(name, id, isFirst));
+                        if (isEdit) {
+                            roomList.get(position).setName(name);
+                            roomList.get(position).setRoomId(id);
+                        } else {
+                            boolean isFirst = roomList.isEmpty();
+                            roomList.add(new GroupRoom(name, id, isFirst));
+                        }
                         saveRooms();
                         adapter.notifyDataSetChanged();
                     } else {
@@ -113,13 +124,22 @@ public class GroupsRoomsActivity extends AppCompatActivity implements GroupRoomA
     }
 
     @Override
+    public void onRoomEdited(int position) {
+        showRoomDialog(roomList.get(position), position);
+    }
+
+    @Override
     public void onRoomLongClicked(int position, View anchorView) {
         PopupMenu popup = new PopupMenu(this, anchorView);
+        popup.getMenu().add("Edit");
         popup.getMenu().add("Copy");
         popup.getMenu().add("Delete");
 
         popup.setOnMenuItemClickListener(item -> {
-            if ("Copy".equals(item.getTitle())) {
+            if ("Edit".equals(item.getTitle())) {
+                onRoomEdited(position);
+                return true;
+            } else if ("Copy".equals(item.getTitle())) {
                 copyRoom(position);
                 return true;
             } else if ("Delete".equals(item.getTitle())) {

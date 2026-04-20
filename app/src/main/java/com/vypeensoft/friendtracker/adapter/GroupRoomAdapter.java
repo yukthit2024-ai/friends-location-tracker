@@ -23,6 +23,7 @@ public class GroupRoomAdapter extends RecyclerView.Adapter<GroupRoomAdapter.View
     public interface OnRoomActionListener {
         void onRoomSelected(int position);
         void onRoomDeleted(int position);
+        void onRoomEdited(int position);
         void onRoomLongClicked(int position, android.view.View view);
     }
 
@@ -57,6 +58,10 @@ public class GroupRoomAdapter extends RecyclerView.Adapter<GroupRoomAdapter.View
             return true;
         });
 
+        holder.btnEdit.setOnClickListener(v -> {
+            if (listener != null) listener.onRoomEdited(position);
+        });
+
         holder.btnDelete.setOnClickListener(v -> {
             if (listener != null) listener.onRoomDeleted(position);
         });
@@ -70,7 +75,7 @@ public class GroupRoomAdapter extends RecyclerView.Adapter<GroupRoomAdapter.View
     public static class ViewHolder extends RecyclerView.ViewHolder {
         RadioButton radioActive;
         TextView textName, textRoomId;
-        ImageButton btnDelete;
+        ImageButton btnDelete, btnEdit;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -78,6 +83,7 @@ public class GroupRoomAdapter extends RecyclerView.Adapter<GroupRoomAdapter.View
             textName = itemView.findViewById(R.id.text_group_name);
             textRoomId = itemView.findViewById(R.id.text_room_id);
             btnDelete = itemView.findViewById(R.id.btn_delete);
+            btnEdit = itemView.findViewById(R.id.btn_edit);
         }
     }
 }
