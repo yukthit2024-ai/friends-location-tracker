@@ -84,6 +84,9 @@ public class LocationService extends Service {
     private void onLocationUpdated(Location location) {
         AppLogger.log(this, TAG, "GPS Polled - Coordinates: " + location.getLatitude() + ", " + location.getLongitude());
         
+        // Refresh config to pick up the latest active room choice
+        matrixClient.loadConfig(this);
+        
         String currentUserId = userId;
         String displayName = matrixClient.getDisplayName();
         if (displayName != null && !displayName.isEmpty()) {

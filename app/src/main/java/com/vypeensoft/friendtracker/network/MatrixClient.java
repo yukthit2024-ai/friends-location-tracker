@@ -77,13 +77,18 @@ public class MatrixClient {
     }
 
     private void ensureReady(final Runnable onReady) {
-        if (accessToken != null && !accessToken.isEmpty() && roomId != null && !roomId.isEmpty()) {
+        if (roomId == null || roomId.isEmpty()) {
+            AppLogger.log(context, TAG, "Matrix Message Send Status: SKIPPED (No active room selected)");
+            return;
+        }
+
+        if (accessToken != null && !accessToken.isEmpty()) {
             onReady.run();
             return;
         }
 
-        if (username.isEmpty() || password.isEmpty() || roomId.isEmpty()) {
-            Log.w(TAG, "Insufficient credentials/room for lazy login");
+        if (username.isEmpty() || password.isEmpty()) {
+            AppLogger.log(context, TAG, "Matrix Message Send Status: SKIPPED (Insufficient credentials for lazy login)");
             return;
         }
 
