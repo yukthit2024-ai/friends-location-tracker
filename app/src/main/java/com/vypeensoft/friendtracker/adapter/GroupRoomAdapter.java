@@ -23,6 +23,7 @@ public class GroupRoomAdapter extends RecyclerView.Adapter<GroupRoomAdapter.View
     public interface OnRoomActionListener {
         void onRoomSelected(int position);
         void onRoomDeleted(int position);
+        void onRoomLongClicked(int position, android.view.View view);
     }
 
     public GroupRoomAdapter(List<GroupRoom> rooms, OnRoomActionListener listener) {
@@ -44,8 +45,16 @@ public class GroupRoomAdapter extends RecyclerView.Adapter<GroupRoomAdapter.View
         holder.textRoomId.setText(room.getRoomId());
         holder.radioActive.setChecked(room.isActive());
 
-        holder.radioActive.setOnClickListener(v -> {
+        View.OnClickListener selectListener = v -> {
             if (listener != null) listener.onRoomSelected(position);
+        };
+
+        holder.itemView.setOnClickListener(selectListener);
+        holder.radioActive.setOnClickListener(selectListener);
+
+        holder.itemView.setOnLongClickListener(v -> {
+            if (listener != null) listener.onRoomLongClicked(position, v);
+            return true;
         });
 
         holder.btnDelete.setOnClickListener(v -> {

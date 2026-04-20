@@ -4,12 +4,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -108,6 +110,56 @@ public class GroupsRoomsActivity extends AppCompatActivity implements GroupRoomA
         saveRooms();
         adapter.notifyDataSetChanged();
         Toast.makeText(this, "Active room updated", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRoomLongClicked(int position, View anchorView) {
+        PopupMenu popup = new PopupMenu(this, anchorView);
+        popup.getMenu().add("Copy");
+        popup.getMenu().add("Delete");
+
+        popup.setOnMenuItemClickListener(item -> {
+            if ("Copy".equals(item.getTitle())) {
+                copyRoom(position);
+                return true;
+            } else if ("Delete".equals(item.getTitle())) {
+                onRoomDeleted(position);
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void copyRoom(int position) {
+        GroupRoom original = roomList.get(position);
+        String baseName = original.getName();
+        
+        // Remove existing suffix if any to get the real base name
+        // Pattern: " - [0-9]+" or "-[0-9]+"
+        if (baseName.matches(".*-\\d+$")) {
+            baseName = baseName.substring(0, baseName.lastIndexOf('-'));
+        }
+
+        String newName = "";
+        int suffix = 1;
+        boolean unique = false;
+        while (!unique) {
+            newName = String.format("%s-%02d", baseName, suffix);
+            unique = true;
+            for (GroupRoom room : roomList) {
+                if (room.getName().equalsIgnoreCase(newName)) {
+                    unique = false;
+                    suffix++;
+                    break;
+                }
+            }
+        }
+
+        roomList.add(new GroupRoom(newName, original.getRoomId(), false));
+        saveRooms();
+        adapter.notifyDataSetChanged();
+        Toast.makeText(this, "Room copied", Toast.LENGTH_SHORT).show();
     }
 
     @Override
