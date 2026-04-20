@@ -30,6 +30,7 @@ public class MatrixClient {
     private String roomId;
     private String username;
     private String password;
+    private String displayName;
     
     private final OkHttpClient client;
     private final Gson gson;
@@ -49,6 +50,7 @@ public class MatrixClient {
         this.accessToken = prefs.getString(MapSettingsActivity.KEY_MATRIX_TOKEN, "");
         this.username = prefs.getString(MapSettingsActivity.KEY_MATRIX_USERNAME, "");
         this.password = prefs.getString(MapSettingsActivity.KEY_MATRIX_PASSWORD, "");
+        this.displayName = prefs.getString(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME, "");
         
         // Find active room ID from list
         this.roomId = "";
@@ -197,6 +199,10 @@ public class MatrixClient {
                 }
             });
         });
+    }
+
+    public String getDisplayName() {
+        return displayName;
     }
 
     public interface MatrixListener {

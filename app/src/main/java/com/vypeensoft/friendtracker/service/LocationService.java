@@ -72,7 +72,14 @@ public class LocationService extends Service {
 
     private void onLocationUpdated(Location location) {
         Log.d(TAG, "Location: " + location.getLatitude() + ", " + location.getLongitude());
-        LocationMessage message = new LocationMessage(userId, location.getLatitude(), location.getLongitude());
+        
+        String currentUserId = userId;
+        String displayName = matrixClient.getDisplayName();
+        if (displayName != null && !displayName.isEmpty()) {
+            currentUserId = displayName;
+        }
+        
+        LocationMessage message = new LocationMessage(currentUserId, location.getLatitude(), location.getLongitude());
         matrixClient.sendLocation(message);
         
         // Broadcast to Activity if it's running

@@ -22,6 +22,7 @@ public class MapSettingsActivity extends AppCompatActivity {
     public static final String KEY_MATRIX_USERNAME = "matrix_username";
     public static final String KEY_MATRIX_PASSWORD = "matrix_password";
     public static final String KEY_MATRIX_ROOM_ALIAS = "matrix_room_alias";
+    public static final String KEY_MATRIX_DISPLAY_NAME = "matrix_display_name";
 
     private TextInputEditText editStyleUrl;
     private Button btnSave;

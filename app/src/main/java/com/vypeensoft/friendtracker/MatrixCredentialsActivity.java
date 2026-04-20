@@ -13,7 +13,7 @@ import com.google.android.material.textfield.TextInputEditText;
 
 public class MatrixCredentialsActivity extends AppCompatActivity {
 
-    private TextInputEditText editHomeserver, editUsername, editPassword;
+    private TextInputEditText editHomeserver, editUsername, editPassword, editDisplayName;
     private Button btnSave;
 
     @Override
@@ -29,6 +29,7 @@ public class MatrixCredentialsActivity extends AppCompatActivity {
 
         editHomeserver = findViewById(R.id.edit_matrix_homeserver);
         editUsername = findViewById(R.id.edit_matrix_username);
+        editDisplayName = findViewById(R.id.edit_matrix_display_name);
         editPassword = findViewById(R.id.edit_matrix_password);
         btnSave = findViewById(R.id.btn_save);
 
@@ -41,6 +42,7 @@ public class MatrixCredentialsActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences(MapSettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
         editHomeserver.setText(prefs.getString(MapSettingsActivity.KEY_MATRIX_HOMESERVER, "https://matrix-client.matrix.org"));
         editUsername.setText(prefs.getString(MapSettingsActivity.KEY_MATRIX_USERNAME, ""));
+        editDisplayName.setText(prefs.getString(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME, ""));
         editPassword.setText(prefs.getString(MapSettingsActivity.KEY_MATRIX_PASSWORD, ""));
     }
 
@@ -50,6 +52,7 @@ public class MatrixCredentialsActivity extends AppCompatActivity {
 
         editor.putString(MapSettingsActivity.KEY_MATRIX_HOMESERVER, editHomeserver.getText().toString().trim());
         editor.putString(MapSettingsActivity.KEY_MATRIX_USERNAME, editUsername.getText().toString().trim());
+        editor.putString(MapSettingsActivity.KEY_MATRIX_DISPLAY_NAME, editDisplayName.getText().toString().trim());
         editor.putString(MapSettingsActivity.KEY_MATRIX_PASSWORD, editPassword.getText().toString().trim());
 
         // Clear cached token when credentials change
