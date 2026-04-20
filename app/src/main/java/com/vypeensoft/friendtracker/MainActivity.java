@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar,
-                R.string.menu_help, R.string.menu_settings);
+                R.string.menu_help, R.string.menu_map_settings);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 

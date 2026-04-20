@@ -7,6 +7,7 @@ import com.vypeensoft.friendtracker.MapSettingsActivity;
 import com.vypeensoft.friendtracker.GroupsRoomsActivity;
 import com.vypeensoft.friendtracker.model.GroupRoom;
 import com.vypeensoft.friendtracker.model.LocationMessage;
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.io.IOException;
 import java.lang.reflect.Type;
