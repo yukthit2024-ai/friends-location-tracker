@@ -124,10 +124,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 symbolManager = new SymbolManager(mapView, map, style);
                 symbolManager.setIconAllowOverlap(true);
                 symbolManager.setTextAllowOverlap(true);
+                symbolManager.setIconIgnorePlacement(true);
+                symbolManager.setTextIgnorePlacement(true);
 
                 AppLogger.log(this, TAG, "Initializing marker icons...");
-                addStyleImage(style, "me-icon", R.drawable.me_marker);
-                addStyleImage(style, "friend-icon", R.drawable.friend_marker);
+                addStyleImage(style, "me-icon", R.drawable.ic_me_marker);
+                addStyleImage(style, "friend-icon", R.drawable.ic_friend_marker);
                 AppLogger.log(this, TAG, "Marker icons added to style.");
             });
         });
