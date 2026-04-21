@@ -34,12 +34,14 @@ import com.vypeensoft.friendtracker.service.LocationService;
 
 import org.json.*;
 import com.vypeensoft.friendtracker.util.SettingsPersistenceManager;
+import com.vypeensoft.friendtracker.util.AppLogger;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String TAG = "MainActivity";
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
 
     private MapView mapView;
