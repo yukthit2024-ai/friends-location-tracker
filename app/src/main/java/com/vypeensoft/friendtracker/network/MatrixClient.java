@@ -67,8 +67,7 @@ public class MatrixClient {
             }
         }
         
-        //AppLogger.log(context, TAG, String.format("Config loaded: Homeserver=%s, ActiveRoom=%s, User=%s", 
-                homeserverUrl, roomId, username));
+        //AppLogger.log(context, TAG, String.format("Config loaded: Homeserver=%s, ActiveRoom=%s, User=%s", homeserverUrl, roomId, username));
     }
 
     public boolean isConfigured() {
