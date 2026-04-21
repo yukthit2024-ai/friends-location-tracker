@@ -57,6 +57,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Handler updateHandler = new Handler();
     private Runnable updateRunnable;
     private long pollingPeriodMs = 10000L;
+    private android.widget.TextView statusTextView;
+    private android.widget.ScrollView statusScroll;
+
+    private BroadcastReceiver logReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String message = intent.getStringExtra("message");
+            if (message != null) {
+                appendToStatusWindow(message);
+            }
+        }
+    };
 
     private BroadcastReceiver locationReceiver = new BroadcastReceiver() {
         @Override
@@ -89,6 +101,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView = findViewById(R.id.mapView);
         mapView.onCreate(savedInstanceState);
 
+        statusTextView = findViewById(R.id.statusTextView);
+        statusScroll = findViewById(R.id.statusScroll);
+        appendToStatusWindow("--- Application Started ---\n");
+
         mapView.getMapAsync(map -> {
             AppLogger.log(this, TAG, "MapView is ready, getting map instance.");
             this.mapLibreMap = map;
@@ -109,8 +125,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 symbolManager.setIconAllowOverlap(true);
                 symbolManager.setTextAllowOverlap(true);
 
+                AppLogger.log(this, TAG, "Initializing marker icons...");
                 addStyleImage(style, "me-icon", R.drawable.me_marker);
                 addStyleImage(style, "friend-icon", R.drawable.friend_marker);
+                AppLogger.log(this, TAG, "Marker icons added to style.");
             });
         });
 
@@ -182,6 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             myLocationSymbol.setLatLng(latLng);
             symbolManager.update(myLocationSymbol);
         }
+        AppLogger.log(this, TAG, "Own marker updated: " + lat + ", " + lon);
     }
 
     private void updateFriendMarker(String userId, double lat, double lon) {
@@ -207,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Symbol symbol = symbolManager.create(options);
             friendSymbols.put(userId, symbol);
         }
+        AppLogger.log(this, TAG, "Friend marker updated for: " + userId);
     }
 
     private void setupFriendUpdateLoop() {
@@ -215,6 +235,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             updateHandler.postDelayed(updateRunnable, pollingPeriodMs);
         };
         updateHandler.post(updateRunnable);
+        AppLogger.log(this, TAG, "Friend update loop started (Interval: " + pollingPeriodMs + "ms)");
+    }
+
+    private void appendToStatusWindow(String text) {
+        runOnUiThread(() -> {
+            if (statusTextView != null) {
+                statusTextView.append(text);
+                if (statusScroll != null) {
+                    statusScroll.post(() -> statusScroll.fullScroll(android.view.View.FOCUS_DOWN));
+                }
+            }
+        });
     }
 
     private void fetchFriendLocations() {
@@ -330,9 +362,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             registerReceiver(locationReceiver,
                     new IntentFilter("com.vypeensoft.friendtracker.LOCATION_UPDATE"));
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(logReceiver, new IntentFilter(AppLogger.ACTION_LOG_UPDATE), Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(logReceiver, new IntentFilter(AppLogger.ACTION_LOG_UPDATE));
+        }
     }
 
-    @Override protected void onPause() { super.onPause(); mapView.onPause(); unregisterReceiver(locationReceiver); }
+    @Override protected void onPause() { 
+        super.onPause(); 
+        mapView.onPause(); 
+        unregisterReceiver(locationReceiver); 
+        unregisterReceiver(logReceiver);
+    }
     @Override protected void onStop() { super.onStop(); mapView.onStop(); }
     @Override protected void onDestroy() { super.onDestroy(); mapView.onDestroy(); updateHandler.removeCallbacks(updateRunnable); }
     @Override public    void onLowMemory() { super.onLowMemory(); mapView.onLowMemory(); }

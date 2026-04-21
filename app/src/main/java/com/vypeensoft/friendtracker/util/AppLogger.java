@@ -1,6 +1,7 @@
 package com.vypeensoft.friendtracker.util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Environment;
 import android.util.Log;
 import java.io.File;
@@ -11,7 +12,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public class AppLogger {
-    private static final String TAG = "AppLogger";
+    public static final String ACTION_LOG_UPDATE = "com.vypeensoft.friendtracker.LOG_UPDATE";
     private static final String LOG_DIR_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Friends_Location_Tracker/logs";
     private static String currentLogFileName = null;
 
@@ -61,6 +62,11 @@ public class AppLogger {
             }
             
             writer.close();
+
+            // Send local broadcast for UI updates
+            Intent intent = new Intent(ACTION_LOG_UPDATE);
+            intent.putExtra("message", logEntry);
+            context.sendBroadcast(intent);
         } catch (IOException e) {
             Log.e(TAG, "Failed to write to log file", e);
         }
