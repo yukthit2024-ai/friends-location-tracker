@@ -227,8 +227,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     String[] parts = body.split("\\|");
                     if (parts.length >= 3) {
                         try {
+                            String senderId = parts[0];
+                            String myDisplayName = matrixClient.getDisplayName();
+                            String myDefaultId = "user_" + android.os.Build.ID;
+                            String myEffectiveId = (myDisplayName != null && !myDisplayName.isEmpty())
+                                    ? myDisplayName : myDefaultId;
+
+                            if (senderId.equals(myEffectiveId)) {
+                                continue;
+                            }
+
                             updateFriendMarker(
-                                    parts[0],
+                                    senderId,
                                     Double.parseDouble(parts[1]),
                                     Double.parseDouble(parts[2])
                             );
