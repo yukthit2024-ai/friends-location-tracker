@@ -290,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     ? myDisplayName : myDefaultId;
 
                             if (senderId.equals(myEffectiveId)) {
-                                AppLogger.log(this, TAG, "Skipping self-location message from " + senderId);
+                                //AppLogger.log(this, TAG, "Skipping self-location message from " + senderId);
                                 continue;
                             }
 
