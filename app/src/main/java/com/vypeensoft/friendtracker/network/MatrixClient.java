@@ -190,6 +190,7 @@ public class MatrixClient {
     }
 
     public void fetchMessages(final MatrixListener listener) {
+        AppLogger.log(context, TAG, "Initiating message fetch from Room: " + roomId);
         ensureReady(() -> {
             String url = homeserverUrl + "/_matrix/client/r0/rooms/" + roomId + "/messages?limit=10&dir=b";
             
@@ -202,13 +203,17 @@ public class MatrixClient {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    Log.e(TAG, "Failed to fetch messages: " + e.getMessage());
+                    AppLogger.logError(context, TAG, "Failed to fetch messages for room: " + roomId, e);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful() && response.body() != null) {
-                        listener.onNewMessagesReceived(response.body().string());
+                        String rawJson = response.body().string();
+                        AppLogger.log(context, TAG, "Successfully fetched messages. Response length: " + rawJson.length());
+                        listener.onNewMessagesReceived(rawJson);
+                    } else {
+                        AppLogger.log(context, TAG, "Failed to fetch messages. Code: " + response.code());
                     }
                     response.close();
                 }

@@ -177,15 +177,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void updateFriendMarker(String userId, double lat, double lon) {
-        if (symbolManager == null) return;
+        if (symbolManager == null) {
+            AppLogger.log(this, TAG, "Cannot update marker: symbolManager is NULL");
+            return;
+        }
 
         LatLng latLng = new LatLng(lat, lon);
 
         if (friendSymbols.containsKey(userId)) {
+            AppLogger.log(this, TAG, "Updating existing marker for user: " + userId);
             Symbol symbol = friendSymbols.get(userId);
             symbol.setLatLng(latLng);
             symbolManager.update(symbol);
         } else {
+            AppLogger.log(this, TAG, "Creating NEW marker for user: " + userId);
             SymbolOptions options = new SymbolOptions()
                     .withLatLng(latLng)
                     .withIconImage("friend-icon")
@@ -205,15 +210,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void fetchFriendLocations() {
+        AppLogger.log(this, TAG, "Periodic update: Fetching friend locations...");
         matrixClient.fetchMessages(rawJson ->
-                runOnUiThread(() -> parseAndShowFriends(rawJson)));
+                runOnUiThread(() -> {
+                    AppLogger.log(this, TAG, "Received messages response, starting UI update...");
+                    parseAndShowFriends(rawJson);
+                }));
     }
 
     private void parseAndShowFriends(String rawJson) {
         try {
             JSONObject obj = new JSONObject(rawJson);
             JSONArray chunk = obj.optJSONArray("chunk");
-            if (chunk == null) return;
+            if (chunk == null) {
+                AppLogger.log(this, TAG, "No messages found in the sync chunk.");
+                return;
+            }
+
+            AppLogger.log(this, TAG, "Parsing " + chunk.length() + " events from Matrix...");
 
             for (int i = 0; i < chunk.length(); i++) {
                 JSONObject event = chunk.getJSONObject(i);
@@ -234,16 +248,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     ? myDisplayName : myDefaultId;
 
                             if (senderId.equals(myEffectiveId)) {
+                                AppLogger.log(this, TAG, "Skipping self-location message from " + senderId);
                                 continue;
                             }
 
+                            AppLogger.log(this, TAG, String.format("Found valid location for %s: %f, %f", senderId, Double.parseDouble(parts[1]), Double.parseDouble(parts[2])));
                             updateFriendMarker(
                                     senderId,
                                     Double.parseDouble(parts[1]),
                                     Double.parseDouble(parts[2])
                             );
                             continue;
-                        } catch (Exception ignored) {}
+                        } catch (Exception e) {
+                            AppLogger.logError(this, TAG, "Failed to parse pipe-delimited location: " + body, e);
+                        }
                     }
                 }
 
