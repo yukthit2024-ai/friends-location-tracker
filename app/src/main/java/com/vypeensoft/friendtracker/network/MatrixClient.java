@@ -155,7 +155,10 @@ public class MatrixClient {
         ensureReady(() -> {
             String txnId = "m" + System.currentTimeMillis();
             String url = homeserverUrl + "/_matrix/client/v3/rooms/" + roomId + "/send/m.room.message/" + txnId;
-            String json = gson.toJson(message);
+            java.util.Map<String, String> content = new java.util.HashMap<>();
+            content.put("msgtype", "m.text");
+            content.put("body", message.toPipeString());
+            String json = gson.toJson(content);
             
             AppLogger.log(context, TAG, "Sending Matrix message to Room: " + roomId);
             AppLogger.log(context, TAG, "Message Content: " + json);

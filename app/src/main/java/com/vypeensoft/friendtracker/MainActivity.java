@@ -220,7 +220,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 JSONObject content = event.optJSONObject("content");
                 if (content == null) continue;
 
-                if ("location".equals(content.optString("type"))) {
+                String type = content.optString("type");
+                String body = content.optString("body");
+
+                if (body != null && body.contains("|")) {
+                    String[] parts = body.split("\\|");
+                    if (parts.length >= 3) {
+                        try {
+                            updateFriendMarker(
+                                    parts[0],
+                                    Double.parseDouble(parts[1]),
+                                    Double.parseDouble(parts[2])
+                            );
+                            continue;
+                        } catch (Exception ignored) {}
+                    }
+                }
+
+                if ("location".equals(type)) {
                     updateFriendMarker(
                             content.getString("userId"),
                             content.getDouble("latitude"),

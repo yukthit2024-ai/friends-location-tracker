@@ -53,4 +53,7 @@ public class LocationMessage {
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(date);
     }
+    public String toPipeString() {
+        return String.format(Locale.US, "%s|%.6f|%.6f|%s", userId, latitude, longitude, timestamp);
+    }
 }
