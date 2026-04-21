@@ -67,7 +67,7 @@ public class MatrixClient {
             }
         }
         
-        AppLogger.log(context, TAG, String.format("Config loaded: Homeserver=%s, ActiveRoom=%s, User=%s", 
+        //AppLogger.log(context, TAG, String.format("Config loaded: Homeserver=%s, ActiveRoom=%s, User=%s", 
                 homeserverUrl, roomId, username));
     }
 
@@ -78,7 +78,7 @@ public class MatrixClient {
 
     private void ensureReady(final Runnable onReady) {
         if (roomId == null || roomId.isEmpty()) {
-            AppLogger.log(context, TAG, "Matrix Message Send Status: SKIPPED (No active room selected)");
+            //AppLogger.log(context, TAG, "Matrix Message Send Status: SKIPPED (No active room selected)");
             return;
         }
 
@@ -88,7 +88,7 @@ public class MatrixClient {
         }
 
         if (username.isEmpty() || password.isEmpty()) {
-            AppLogger.log(context, TAG, "Matrix Message Send Status: SKIPPED (Insufficient credentials for lazy login)");
+            //AppLogger.log(context, TAG, "Matrix Message Send Status: SKIPPED (Insufficient credentials for lazy login)");
             return;
         }
 
@@ -160,7 +160,7 @@ public class MatrixClient {
             content.put("body", message.toPipeString());
             String json = gson.toJson(content);
             
-            AppLogger.log(context, TAG, "Sending Matrix message to Room: " + roomId);
+            //AppLogger.log(context, TAG, "Sending Matrix message to Room: " + roomId);
             AppLogger.log(context, TAG, "Message Content: " + json);
 
             RequestBody body = RequestBody.create(json, JSON);
