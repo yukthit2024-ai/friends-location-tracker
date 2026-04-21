@@ -17,7 +17,7 @@ public class AppLogger {
 
     private static String getLogFileName() {
         if (currentLogFileName == null) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd-HHmmss", Locale.getDefault());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.getDefault());
             currentLogFileName = "app-" + sdf.format(new Date()) + ".log";
         }
         return currentLogFileName;

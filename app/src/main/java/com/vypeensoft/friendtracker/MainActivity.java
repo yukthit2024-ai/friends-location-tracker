@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mapView.onCreate(savedInstanceState);
 
         mapView.getMapAsync(map -> {
+            AppLogger.log(this, TAG, "MapView is ready, getting map instance.");
             this.mapLibreMap = map;
 
             SharedPreferences prefs = getSharedPreferences(MapSettingsActivity.PREFS_NAME, Context.MODE_PRIVATE);
@@ -97,6 +98,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     "https://tiles.openfreemap.org/styles/liberty");
 
             map.setStyle(new Style.Builder().fromUri(styleUrl), style -> {
+                AppLogger.log(this, TAG, "Map Style Loaded: " + styleUrl);
+
+                // Reset markers because they are tied to the specific SymbolManager/Style instance
+                myLocationSymbol = null;
+                friendSymbols.clear();
 
                 // ✅ Correct initialization (v9)
                 symbolManager = new SymbolManager(mapView, map, style);
